@@ -54,14 +54,27 @@ public class UserService {
     }
     
     @GET
-    @Path("{userId}")
+    @Path("/basicInfo/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getUserById(@PathParam("userId")int userId) {
+    public User getUserBasicInfoById(@PathParam("userId")int userId) {
     	User user = userDao.getUser(userId);
+
     	System.out.println("client is request the info of user: " + userId);
         //User userNew = new User(2,"mediaID","googleId","fzudxj@gmail","123345","xuejing","dong","emma");
         //userDao.create(userNew);
-        return user;
+
+    	user.setEvents(new HashSet());
+    	return user;
+    }
+    
+    @GET
+    @Path("/userEventsInfo/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public User getUserById(@PathParam("userId")int userId) {
+    	User user = userDao.getUser(userId);
+
+    	System.out.println("client is request the info of user: " + userId);
+    	return user;
     }
     
     // Use data from the client source to create a new User object, returned in JSON format.  

@@ -17,10 +17,10 @@ public class Event {
 	private String eventType;
 	private String title;
 	private String location;
-	private String startTime;
-	private String endTime;
-	private String creatorId;
-	private String createTime;
+	private long startTime;
+	private long endTime;
+	private int creatorId;
+	private long createTime;
 	private Set<User> attendees;
 	
 	public Event() {}
@@ -67,45 +67,45 @@ public class Event {
 	}
 
 	@Column(name = "start_time")
-	public String getStartTime() {
+	public long getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(String startTime) {
+	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
 
 	@Column(name = "end_time")
-	public String getEndTime() {
+	public long getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(String endTime) {
+	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
 
 	@Column(name = "creator_id")
-	public String getCreatorId() {
+	public int getCreatorId() {
 		return creatorId;
 	}
 
-	public void setCreatorId(String creatorId) {
+	public void setCreatorId(int creatorId) {
 		this.creatorId = creatorId;
 	}
 
 	@Column(name = "create_time")
-	public String getCreateTime() {
+	public long getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(String createTime) {
+	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
 	}
 	
 	@XmlElementWrapper (name="attendees")
     @XmlElement(name="attendee")
-	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
-    @JoinTable(name="event_attendees", 
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)  
+    @JoinTable(name="event_attendee", 
     		    joinColumns=@JoinColumn(name="event_id"), 
     			inverseJoinColumns=@JoinColumn(name="u_id"))  
 	public Set<User> getAttendees() {

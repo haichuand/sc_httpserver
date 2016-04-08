@@ -61,7 +61,7 @@ public class UserDaoImpl implements UserDao {
         
         try{
         	tx = session.beginTransaction();
-        	user = (User)session.get(User.class, uId); 
+        	user = (User)session.get(User.class, uId);
         	tx.commit();
         } catch (HibernateException e) {
         	System.out.println("Error");
@@ -70,7 +70,6 @@ public class UserDaoImpl implements UserDao {
         } finally {
             session.close(); 
         }
-        
         return user;
 	}
 

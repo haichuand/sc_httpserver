@@ -1,6 +1,7 @@
 package webService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Request;
 
 import dao.EventDao;
 import dao.impl.EventDaoImpl;
+import model.Event;
 import model.User;
 
 
@@ -51,6 +53,37 @@ public class EventService {
     @Produces(MediaType.TEXT_PLAIN)
     public String respondAsReady() {
         return "Demo service for event is ready!";
+    }
+    
+    @GET
+    @Path("{eventId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Event getEventById(@PathParam("eventId")String eventId) {
+    	Event event = eventDao.getEvent(eventId);
+    	System.out.println("client is request the info of user: " + eventId);
+        return event;
+    }
+    
+    // Use data from the client source to create a new User object, returned in JSON format.  
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String postEvent(MultivaluedMap<String, Object> eventParams) {
+    	Event event = new Event();
+    	event.setEventId((String)eventParams.getFirst(EVENT_ID));
+    	event.setEventType((String)eventParams.getFirst(EVENT_TYPE));
+    	event.setTitle((String)eventParams.getFirst(TITLE));
+    	event.setLocation((String)eventParams.getFirst(LOCATION));
+    	event.setStartTime((long)eventParams.getFirst(START_TIME));
+    	event.setEndTime((long)eventParams.getFirst(END_TIME));
+    	event.setCreatorId((int)eventParams.getFirst(CREATOR_ID));
+    	event.setCreateTime((long)eventParams.getFirst(CREATE_TIME));
+    	
+    	List attendeeIds = (List) eventParams.get(ATTENDEES);
+    	
+    	String eventId = eventDao.create(event, attendeeIds);
+    	
+    	return eventId;
     }
 
 }

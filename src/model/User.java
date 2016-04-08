@@ -1,37 +1,26 @@
 package model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.annotation.*;
 import javax.persistence.*;
 
 @XmlRootElement
 @Entity
 @Table(name = "user",schema="public")
 public class User {
-	@Id @GeneratedValue
-	@Column(name = "u_id")
+	
 	private int uId;
-	
-	@Column(name = "gcm_id")
 	private String gcmId;
-	
-	@Column(name = "media_id")
 	private String mediaId;
-	
-	@Column(name = "email")
 	private String email;
-	
-	@Column(name = "phone_number")
 	private String phoneNumber;
-	
-	@Column(name = "first_name")
 	private String firstName;
-	
-	@Column(name = "last_name")
 	private String lastName;
-	
-	@Column(name = "user_name")
 	private String userName;
-	
+	private Set<Event> events;
+
 	public User() {}
     
 	public User (int uId) {
@@ -49,6 +38,8 @@ public class User {
     	this.userName = userName;
     }
     
+    @Id @GeneratedValue
+	@Column(name = "u_id")
     public int getId() {
     	return this.uId;
     }
@@ -57,6 +48,7 @@ public class User {
     	this.uId = uId;
     }
     
+	@Column(name = "gcm_id")
     public String getGcmId() {
     	return this.gcmId;
     }
@@ -65,6 +57,7 @@ public class User {
     	this.gcmId = gcmId;
     }
     
+    @Column(name = "media_id")
     public String getMediaId() {
     	return this.mediaId;
     }
@@ -73,6 +66,7 @@ public class User {
     	this.mediaId = mediaId;
     }
     
+    @Column(name = "email")
     public String getEmail() {
     	return this.email;
     }
@@ -80,6 +74,8 @@ public class User {
     public void setEmail(String email) {
     	this.email = email;
     }
+    
+    @Column(name = "phone_number")
     public String getPhoneNumber() {
     	return this.phoneNumber;
     }
@@ -88,6 +84,7 @@ public class User {
     	this.phoneNumber = phoneNumber;
     }
     
+    @Column(name = "first_name")
     public String getFirstName() {
     	return this.firstName;
     }
@@ -96,6 +93,7 @@ public class User {
     	this.firstName = firstName;
     }
     
+    @Column(name = "last_name")
     public String getLastName() {
     	return this.lastName;
     }
@@ -104,6 +102,7 @@ public class User {
     	this.lastName = lastName;
     }
     
+    @Column(name = "user_name")
     public String getUserName() {
     	return this.userName;
     }
@@ -112,5 +111,15 @@ public class User {
     	this.userName = userName;
     }
     
+    @XmlElementWrapper (name="events")
+    @XmlElement(name="event")
+    @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="user")
+    public Set<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(Set<Event> events) {
+		this.events = events;
+	}
     
 }

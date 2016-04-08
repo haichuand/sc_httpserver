@@ -7,13 +7,13 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import model.User;
-import dao.UserDAO;
+import dao.UserDao;
 
 
-public class UserDAOImpl implements UserDAO {
+public class UserDaoImpl implements UserDao {
 	private SessionFactory factory;
 	
-	public UserDAOImpl () {
+	public UserDaoImpl () {
 		try{
             factory = new Configuration().configure().buildSessionFactory();
          }catch (Throwable ex) { 

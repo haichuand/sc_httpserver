@@ -1,5 +1,8 @@
 package webService;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -12,14 +15,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-
-import dao.UserDAO;
-import dao.impl.UserDAOImpl;
+import dao.UserDao;
+import dao.impl.UserDaoImpl;
 import model.User;
 
 @Path("/user")
@@ -32,13 +29,14 @@ public class UserService {
 	private static String FIRST_NAME = "firstName";
 	private static String LAST_NAME = "lastName";
 	private static String USER_NAME = "userName";
+	private static Set events = new HashSet<>(0);
 	
 	private User user = new User();
-	private static UserDAO userDao = new UserDAOImpl();
+	private static UserDao userDao = new UserDaoImpl();
 	
 	// The @Context annotation allows us to have certain contextual objects
     // injected into this class.
-    // UriInfo object allows us to get URI information (no kidding).
+    // UriInfo object allows us to get URI information.
     @Context
     UriInfo uriInfo;
  
@@ -52,7 +50,7 @@ public class UserService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String respondAsReady() {
-        return "Demo service is ready!";
+        return "Demo service for user is ready!";
     }
     
     @GET

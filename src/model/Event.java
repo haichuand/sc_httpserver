@@ -1,5 +1,6 @@
 package model;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +23,8 @@ public class Event {
 	private int creatorId;
 	private long createTime;
 	private Set<User> attendees;
-	
+	private List<Integer> attendeesId;
+
 	public Event() {}
     
 	public Event (String eventId) {
@@ -115,6 +117,13 @@ public class Event {
 	public void setAttendees(Set<User> attendees) {
 		this.attendees = attendees;
 	}
-
 	
+	@Transient
+	public List<Integer> getAttendeesId() {
+		return attendeesId;
+	}
+
+	public void setAttendeesId(List<Integer> attendeesId) {
+		this.attendeesId = attendeesId;
+	}
 }

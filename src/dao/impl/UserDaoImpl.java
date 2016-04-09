@@ -24,14 +24,14 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	@Override
-	public String create(User user) {
+	public int create(User user) {
 		Session session = factory.openSession();
         Transaction tx = null;
-        String id = null;
+        int id = -1;
         
         try{
         	tx = session.beginTransaction();
-        	id = String.valueOf((Integer)session.save(user)); 
+        	id = (Integer)session.save(user); 
         	tx.commit();
         } catch (HibernateException e) {
         	System.out.println("Error");

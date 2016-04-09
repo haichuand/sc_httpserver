@@ -21,7 +21,7 @@ import model.User;
 
 @Path("/user")
 public class UserService {
-	private static String U_ID = "u_Id";
+	private static String U_ID = "uId";
 	private static String MEDIA_ID = "mediaId";
 	private static String GCM_ID= "gcmId";
 	private static String EMAIL = "email";
@@ -79,27 +79,11 @@ public class UserService {
     
     // Use data from the client source to create a new User object, returned in JSON format.  
     @POST
+    @Path("/createuser")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public User postUser(MultivaluedMap<String, String> userParams) {
-      int uId = userParams.getFirst (U_ID);
-    	String mediaId = userParams.getFirst(MEDIA_ID);
-    	String gcmId = userParams.getFirst(GCM_ID);
-    	String email = userParams.getFirst(EMAIL);
-    	String phoneNumber = userParams.getFirst(PHONE_NUMBER);
-        String firstName = userParams.getFirst(FIRST_NAME);
-        String lastName = userParams.getFirst(LAST_NAME);
-        String userName = userParams.getFirst(USER_NAME);
-
-        User userNew = new User(uId,mediaId, gcmId, email, phoneNumber, firstName, lastName, userName);
-        userDao.create (userNew);
-
-        System.out.println("Storing posted " + firstName + " " + lastName + "  " + email);
-         
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-         				         
-        return user;                 
+    @Produces(MediaType.TEXT_PLAIN)
+    public String postUser(User user) {
+        int id = userDao.create (user);		         
+        return String.valueOf(id);                 
     }
 }

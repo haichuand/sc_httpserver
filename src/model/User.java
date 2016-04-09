@@ -41,11 +41,11 @@ public class User {
     
     @Id @GeneratedValue
 	@Column(name = "u_id")
-    public int getId() {
+    public int getuId() {
     	return this.uId;
     }
     
-    public void setId(int uId) {
+    public void setuId(int uId) {
     	this.uId = uId;
     }
     

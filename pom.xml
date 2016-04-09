@@ -20,6 +20,11 @@
 		<artifactId>postgresql</artifactId>
 		<version>9.4.1208.jre7</version>
     </dependency>
+    <dependency>
+    	<groupId>com.sun.jersey</groupId>
+    	<artifactId>jersey-json</artifactId>
+    	<version>1.19.1</version>
+	</dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>

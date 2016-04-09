@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import model.User;
+import java.util.Set;
 import dao.UserDao;
 
 
@@ -75,6 +76,6 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public Set getUserEvents(int uId) {
-    getUser(uId).getEvents();
+		return getUser(uId).getEvents();
 	}
 }

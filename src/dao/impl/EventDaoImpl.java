@@ -137,16 +137,11 @@ public class EventDaoImpl implements EventDao {
 	@Override
 	public Event getEvent(String eventId) {
 		Session session = factory.openSession();
-		List result = null;
+		Event event = null;
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
-			String hql = "FROM event E " + "WHERE E.event_id = : ev_id";
-
-			Query query = session.createQuery(hql);
-			query.setParameter("ev_id", eventId);
-
-			result = query.list();
+			event = (Event)session.get(Event.class, eventId);
 			System.out.println("GetEvent for " + eventId);
 
 			tx.commit();
@@ -158,7 +153,7 @@ public class EventDaoImpl implements EventDao {
 		} finally {
 			session.close();
 		}
-		return (Event)result.get(0);
+		return event;
 	}
 
 	@Override

@@ -46,12 +46,38 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public void edit(User user) {
-		factory.getCurrentSession().update(user);
+		Session session = factory.openSession();
+        Transaction tx = null;
+        
+        try{
+        	tx = session.beginTransaction();
+        	session.update(user);
+        	tx.commit();
+        } catch (HibernateException e) {
+        	System.out.println("Error");
+            if (tx!=null) tx.rollback();
+            	e.printStackTrace(); 
+        } finally {
+            session.close(); 
+        }
 	}
 
 	@Override
-	public void delete(String uId) {
-		factory.getCurrentSession().delete(uId);
+	public void delete(int uId) {
+		Session session = factory.openSession();
+        Transaction tx = null;
+        
+        try{
+        	tx = session.beginTransaction();
+        	session.delete(uId);
+        	tx.commit();
+        } catch (HibernateException e) {
+        	System.out.println("Error");
+            if (tx!=null) tx.rollback();
+            	e.printStackTrace(); 
+        } finally {
+            session.close(); 
+        }
 	}
 
 	@Override

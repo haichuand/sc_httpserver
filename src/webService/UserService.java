@@ -86,4 +86,13 @@ public class UserService {
         int id = userDao.create (user);		         
         return String.valueOf(id);                 
     }
+    
+    @POST
+    @Path("/edituser")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String updateUser(User user) {
+        userDao.edit(user);		         
+        return "Successfully updated!";                 
+    }
 }

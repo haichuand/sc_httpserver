@@ -21,7 +21,7 @@ import model.User;
 
 @Path("/user")
 public class UserService {
-	private static String U_ID = "u_id";
+	private static String U_ID = "u_Id";
 	private static String MEDIA_ID = "mediaId";
 	private static String GCM_ID= "gcmId";
 	private static String EMAIL = "email";
@@ -82,6 +82,7 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public User postUser(MultivaluedMap<String, String> userParams) {
+      int uId = userParams.getFirst (U_ID);
     	String mediaId = userParams.getFirst(MEDIA_ID);
     	String gcmId = userParams.getFirst(GCM_ID);
     	String email = userParams.getFirst(EMAIL);
@@ -89,7 +90,10 @@ public class UserService {
         String firstName = userParams.getFirst(FIRST_NAME);
         String lastName = userParams.getFirst(LAST_NAME);
         String userName = userParams.getFirst(USER_NAME);
-        //TODO:store the information to database
+
+        User userNew = new User(uId,mediaId, gcmId, email, phoneNumber, firstName, lastName, userName);
+        userDao.create (userNew);
+
         System.out.println("Storing posted " + firstName + " " + lastName + "  " + email);
          
         user.setFirstName(firstName);

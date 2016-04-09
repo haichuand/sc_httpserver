@@ -62,7 +62,7 @@ public class User {
     public String getMediaId() {
     	return this.mediaId;
     }
-    
+
     public void setMediaId(String mediaId) {
     	this.mediaId = mediaId;
     }
@@ -123,5 +123,4 @@ public class User {
 	public void setEvents(Set<Event> events) {
 		this.events = events;
 	}
-    
 }

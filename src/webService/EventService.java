@@ -24,14 +24,14 @@ import model.User;
 
 @Path("/event")
 public class EventService {
-	private static String EVENT_ID = "event_id";
-	private static String EVENT_TYPE = "event_type";
+	private static String EVENT_ID = "eventId";
+	private static String EVENT_TYPE = "eventType";
 	private static String TITLE = "title";
 	private static String LOCATION = "location";
-	private static String START_TIME = "start_time";
-	private static String END_TIME = "end_time";
-	private static String CREATOR_ID = "creator_id";
-	private static String CREATE_TIME = "create_time";
+	private static String START_TIME = "startTime";
+	private static String END_TIME = "endTime";
+	private static String CREATOR_ID = "creatorId";
+	private static String CREATE_TIME = "createTime";
 	private static String ATTENDEES = "attendees";
 	
 	private static EventDao eventDao = new EventDaoImpl();
@@ -64,24 +64,15 @@ public class EventService {
         return event;
     }
     
-    // Use data from the client source to create a new User object, returned in JSON format.  
-    @POST
+    // Event data from the client source to create a new Event object, returned in JSON format.  
+    @SuppressWarnings("unchecked")
+	@POST
+    @Path("/createEvent")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String postEvent(MultivaluedMap<String, Object> eventParams) {
-    	Event event = new Event();
-    	event.setEventId((String)eventParams.getFirst(EVENT_ID));
-    	event.setEventType((String)eventParams.getFirst(EVENT_TYPE));
-    	event.setTitle((String)eventParams.getFirst(TITLE));
-    	event.setLocation((String)eventParams.getFirst(LOCATION));
-    	event.setStartTime((long)eventParams.getFirst(START_TIME));
-    	event.setEndTime((long)eventParams.getFirst(END_TIME));
-    	event.setCreatorId((int)eventParams.getFirst(CREATOR_ID));
-    	event.setCreateTime((long)eventParams.getFirst(CREATE_TIME));
+    public String postEvent(Event event) {
     	
-    	List attendeeIds = (List) eventParams.get(ATTENDEES);
-    	
-    	String eventId = eventDao.create(event, attendeeIds);
+    	String eventId = eventDao.create(event);
     	
     	return eventId;
     }

@@ -32,14 +32,15 @@ public class EventDaoImpl implements EventDao {
 	}
 
 	@Override
-	public String create(Event event, List attendeeIds) {
+	public String create(Event event) {
 		UserDao userDao = new UserDaoImpl();
 		Session session = factory.openSession();
 		Transaction tx = null;
 		String id = UniqueIdGenerator.generateId(Event.class.getSimpleName(),
 				event.getCreatorId());
 		event.setEventId(id);
-
+		
+		List<Integer> attendeesId = event.getAttendeesId();
 		List<User> attendees = new LinkedList();
 		Set<Event> eventSet = new HashSet<Event>();
 		Set<User> attendeeSet;
@@ -48,9 +49,9 @@ public class EventDaoImpl implements EventDao {
 			tx = session.beginTransaction();
 			eventSet.add(event);
 
-			if (attendeeIds != null && !attendeeIds.isEmpty()) {
-				for (int i = 0; i < attendeeIds.size(); i++) {
-					int uId = (Integer) attendeeIds.get(i);
+			if (attendeesId != null && !attendeesId.isEmpty()) {
+				for (int i = 0; i < attendeesId.size(); i++) {
+					int uId = attendeesId.get(i);
 					User userTemp = userDao.getUser(uId);
 					userTemp.setEvents(eventSet);
 					attendees.add(userTemp);
@@ -59,7 +60,7 @@ public class EventDaoImpl implements EventDao {
 			attendeeSet = new HashSet(attendees);
 			event.setAttendees(attendeeSet);
 
-			id = String.valueOf((Integer) session.save(event));
+			session.save(event);
 			tx.commit();
 		} catch (HibernateException e) {
 			System.out.println("Error");

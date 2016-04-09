@@ -1,6 +1,7 @@
 package dao;
 
 import model.User;
+import java.util.Set;
 
 public interface UserDao {
 	public String create(User user);

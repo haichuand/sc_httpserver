@@ -7,4 +7,5 @@ public interface UserDao {
 	public void edit(User user);
 	public void delete(String uId);
 	public User getUser(int uId);
+	public Set getUserEvents(int uId);
 }

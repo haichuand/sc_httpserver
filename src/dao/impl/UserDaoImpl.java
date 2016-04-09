@@ -73,4 +73,8 @@ public class UserDaoImpl implements UserDao {
         return user;
 	}
 
+	@Override
+	public Set getUserEvents(int uId) {
+    getUser(uId).getEvents();
+	}
 }

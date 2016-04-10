@@ -10,6 +10,7 @@
         <property name="hibernate.connection.password">8008208820</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/xuejingdb</property>
 
+        <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
 
 
         <property name="connection_pool_size">1</property>

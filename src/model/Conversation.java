@@ -13,12 +13,41 @@ public class Conversation {
 	private String cId;
 	private String title;
 	private int creatorId;
+  private List attendees;
+  private List messages;
 	
 	@Id
 	@Column(name = "c_id")
 	public String getcId() {
 		return cId;
 	}
+
+  @XmlElementWrapper(name="users")
+  @XmlElement(name="user")
+  @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL) 
+  @JoinTable(name="conversation_attendee",
+      joinColumns=@JoinColumn(name="c_id"),
+      inverseJoinColumns=@JoinColumn(name="u_id"))
+  public List getAttendees() {
+    System.out.println ("Get Conversation attendees.");
+    return attendees;
+  }
+
+  public List setAttendees(List atts) {
+    attendees = atts;
+  }
+
+  @XmlElementWrapper(name="messages")
+  @XmlElement(name="message")
+  @OneToMany
+  @JoinColumn(name="c_id")
+  public List getMessages() {
+    return messages;
+  }
+
+  public List setMessages(List msgs) {
+    messages = msgs;
+  }
 	
 	public void setcId(String cId) {
 		this.cId = cId;

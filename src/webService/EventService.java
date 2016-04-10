@@ -78,7 +78,7 @@ public class EventService {
     	return eventId;
     }
     
-	@POST
+    @POST
     @Path("/editEvent")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -96,5 +96,4 @@ public class EventService {
 	}
 	
 	
-
 }

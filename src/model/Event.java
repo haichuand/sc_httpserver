@@ -1,5 +1,6 @@
 package model;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class Event {
 	private long endTime;
 	private int creatorId;
 	private long createTime;
-	private Set<User> attendees;
+	private Set<User> attendees = new HashSet<>();
 	private List<Integer> attendeesId;
 
 	public Event() {}
@@ -106,11 +107,12 @@ public class Event {
 	
 	@XmlElementWrapper (name="attendees")
     @XmlElement(name="attendee")
-	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)  
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
     @JoinTable(name="event_attendee", 
     		    joinColumns=@JoinColumn(name="event_id"), 
     			inverseJoinColumns=@JoinColumn(name="u_id"))  
 	public Set<User> getAttendees() {
+		System.out.println ("get attendees \n\n\n\n");
 		return attendees;
 	}
 

@@ -147,7 +147,16 @@ public class EventDaoImpl implements EventDao {
 			event = (Event)session.get(Event.class, eventId);
 			System.out.println("GetEvent for " + eventId);
 			attendees = event.getAttendees();
+			
+
+			for(User user: attendees) {
+				attendeesId.add(user.getuId());
+			}
+			event.setAttendeesId(attendeesId);
+			
+			
 			tx.commit();
+			System.out.println("after commit");
 		} catch (HibernateException e) {
 			System.out.println("Error");
 			if (tx != null)
@@ -157,10 +166,6 @@ public class EventDaoImpl implements EventDao {
 			session.close();
 		}
 		
-		for(User user: attendees) {
-			attendeesId.add(user.getuId());
-		}
-		event.setAttendeesId(attendeesId);
 		return event;
 	}
 

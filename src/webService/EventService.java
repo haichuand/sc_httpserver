@@ -66,16 +66,15 @@ public class EventService {
     }
     
     // Event data from the client source to create a new Event object, returned in JSON format.  
-    @SuppressWarnings("unchecked")
 	@POST
     @Path("/createEvent")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String postEvent(Event event) {
-    	
     	String eventId = eventDao.create(event);
-    	
     	return eventId;
     }
+    
+    
 
 }

@@ -140,11 +140,13 @@ public class EventDaoImpl implements EventDao {
 		Session session = factory.openSession();
 		Event event = null;
 		Transaction tx = null;
+		List<Integer> attendeesId = new LinkedList<>();
+		Set<User> attendees = null;
 		try {
 			tx = session.beginTransaction();
 			event = (Event)session.get(Event.class, eventId);
 			System.out.println("GetEvent for " + eventId);
-
+			attendees = event.getAttendees();
 			tx.commit();
 		} catch (HibernateException e) {
 			System.out.println("Error");
@@ -154,6 +156,11 @@ public class EventDaoImpl implements EventDao {
 		} finally {
 			session.close();
 		}
+		
+		for(User user: attendees) {
+			attendeesId.add(user.getuId());
+		}
+		event.setAttendeesId(attendeesId);
 		return event;
 	}
 

@@ -61,6 +61,7 @@ public class EventService {
     public Event getEventById(@PathParam("eventId")String eventId) {
     	Event event = eventDao.getEvent(eventId);
     	System.out.println("client is request the info of user: " + eventId);
+    	event.setAttendees(new HashSet<User>());
         return event;
     }
     

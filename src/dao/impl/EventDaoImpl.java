@@ -80,25 +80,24 @@ public class EventDaoImpl implements EventDao {
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
-			String hql = "UPDATE event set" + "even_type = : ev_type"
-					+ "title = : ev_title" + "location = : ev_location"
-					+ "start_time = : ev_start" + "end_time = : ev_end"
-					+ "creator_id = : ev_creator" + "create_time = : ev_ctime"
-					+ "WHERE event_id = : ev_id";
-
-			Query query = session.createQuery(hql);
-			query.setParameter("ev_id", event.getEventId());
-			query.setParameter("ev_type", event.getEventType());
-			query.setParameter("ev_title", event.getEventType());
-			query.setParameter("ev_location", event.getTitle());
-			query.setParameter("ev_start", event.getStartTime());
-			query.setParameter("ev_end", event.getEndTime());
-			query.setParameter("ev_creator", event.getCreatorId());
-			query.setParameter("ev_ctime", event.getCreateTime());
-
-			int result = query.executeUpdate();
-			System.out.println("Update finished. Rows affected: " + result);
-
+//			String hql = "UPDATE event set" + "even_type = : ev_type"
+//					+ "title = : ev_title" + "location = : ev_location"
+//					+ "start_time = : ev_start" + "end_time = : ev_end"
+//					+ "creator_id = : ev_creator" + "create_time = : ev_ctime"
+//					+ "WHERE event_id = : ev_id";
+//
+//			Query query = session.createQuery(hql);
+//			query.setParameter("ev_id", event.getEventId());
+//			query.setParameter("ev_type", event.getEventType());
+//			query.setParameter("ev_title", event.getEventType());
+//			query.setParameter("ev_location", event.getTitle());
+//			query.setParameter("ev_start", event.getStartTime());
+//			query.setParameter("ev_end", event.getEndTime());
+//			query.setParameter("ev_creator", event.getCreatorId());
+//			query.setParameter("ev_ctime", event.getCreateTime());
+//
+//			int result = query.executeUpdate();
+			session.update(event);
 			tx.commit();
 		} catch (HibernateException e) {
 			System.out.println("Error");

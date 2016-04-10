@@ -75,6 +75,14 @@ public class EventService {
     	return eventId;
     }
     
+	@POST
+    @Path("/editEvent")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String editEvent(Event event) {
+    	eventDao.edit(event);
+    	return "Update Event Successfully";
+    }
     
 
 }

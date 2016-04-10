@@ -13,7 +13,7 @@ public class Message {
 	
     private MessagePrimaryKey messageKey;
 	private String mediaId;
-	private String text;
+	private String textContent;
 	
 	@EmbeddedId
 	public MessagePrimaryKey getMessageKey() {
@@ -33,11 +33,11 @@ public class Message {
 		this.mediaId = mediaId;
 	}
 	
-	@Column(name = "text")
-	public String getText() {
-		return text;
+	@Column(name = "text_content")
+	public String getTextContent() {
+		return textContent;
 	}
-	public void setText(String text) {
-		this.text = text;
+	public void setTextContent(String textContent) {
+		this.textContent = textContent;
 	}
 }

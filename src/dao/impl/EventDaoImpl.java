@@ -76,27 +76,30 @@ public class EventDaoImpl implements EventDao {
 
 	@Override
 	public void edit(Event event) {
+		UserDao userDao = new UserDaoImpl();
 		Session session = factory.openSession();
 		Transaction tx = null;
+		
+		List<Integer> attendeesId = event.getAttendeesId();
+		List<User> attendees = new LinkedList();
+		Set<Event> eventSet = new HashSet<Event>();
+		Set<User> attendeeSet;
+
 		try {
 			tx = session.beginTransaction();
-//			String hql = "UPDATE event set" + "even_type = : ev_type"
-//					+ "title = : ev_title" + "location = : ev_location"
-//					+ "start_time = : ev_start" + "end_time = : ev_end"
-//					+ "creator_id = : ev_creator" + "create_time = : ev_ctime"
-//					+ "WHERE event_id = : ev_id";
-//
-//			Query query = session.createQuery(hql);
-//			query.setParameter("ev_id", event.getEventId());
-//			query.setParameter("ev_type", event.getEventType());
-//			query.setParameter("ev_title", event.getEventType());
-//			query.setParameter("ev_location", event.getTitle());
-//			query.setParameter("ev_start", event.getStartTime());
-//			query.setParameter("ev_end", event.getEndTime());
-//			query.setParameter("ev_creator", event.getCreatorId());
-//			query.setParameter("ev_ctime", event.getCreateTime());
-//
-//			int result = query.executeUpdate();
+			eventSet.add(event);
+
+			if (attendeesId != null && !attendeesId.isEmpty()) {
+				for (int i = 0; i < attendeesId.size(); i++) {
+					int uId = attendeesId.get(i);
+					User userTemp = userDao.getUser(uId);
+					userTemp.setEvents(eventSet);
+					attendees.add(userTemp);
+				}
+			}
+			attendeeSet = new HashSet(attendees);
+			event.setAttendees(attendeeSet);
+			
 			session.update(event);
 			tx.commit();
 		} catch (HibernateException e) {
@@ -115,14 +118,9 @@ public class EventDaoImpl implements EventDao {
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
-			String hql = "DELETE FROM event " + "WHERE event_id = : ev_id";
-
-			Query query = session.createQuery(hql);
-			query.setParameter("ev_id", eventId);
-
-			int result = query.executeUpdate();
-			System.out.println("Delete finished. Rows affected: " + result);
-
+			Event event = session.load(Event.class, eventId);
+			if(event != null)
+				session.delete(event);	
 			tx.commit();
 		} catch (HibernateException e) {
 			System.out.println("Error");

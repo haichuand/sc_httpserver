@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -17,7 +18,9 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
 import dao.EventDao;
+import dao.UserDao;
 import dao.impl.EventDaoImpl;
+import dao.impl.UserDaoImpl;
 import model.Event;
 import model.User;
 
@@ -84,5 +87,14 @@ public class EventService {
     	return "Update Event Successfully";
     }
     
+	@DELETE
+	@Path("/deleteEvent/{eventId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String deleteEvent(@PathParam("eventId")String eventId) {
+		eventDao.delete(eventId);
+		return "Delete Event Successfully";
+	}
+	
+	
 
 }

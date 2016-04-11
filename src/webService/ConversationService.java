@@ -127,4 +127,27 @@ public class ConversationService {
    		return "message is successfully saved on server";
    	}
    	
+	@POST
+    @Path("/editConversation")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	public String updateConversation(Conversation conv) {
+		UserDao userDao = new UserDaoImpl();
+		
+		List<Integer> attendeesId = conv.getAttendeesId();
+		Set<User> attendees = new HashSet();
+		Set<Conversation> convs = new HashSet<>();
+
+		if (attendeesId != null && !attendeesId.isEmpty()) {
+			for (int i = 0; i < attendeesId.size(); i++) {
+				int uId = attendeesId.get(i);
+				User userTemp = userDao.getUser(uId);
+				attendees.add(userTemp);
+			}
+		}
+		conv.setAttendees(attendees);
+		conversationDao.edit(conv);
+		return "Conversation is successfully updated on server, conversation id: " + conv.getcId();
+	}
+   	
 }

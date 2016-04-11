@@ -9,4 +9,5 @@ public interface UserDao {
 	public void delete(int uId);
 	public User getUser(int uId);
 	public Set getUserEvents(int uId);
+	public Set getUserConversations(int uId);
 }

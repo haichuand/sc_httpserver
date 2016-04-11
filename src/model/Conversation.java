@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 @XmlRootElement
 @Entity
 @Table(name = "conversation", schema = "public")
@@ -62,6 +64,7 @@ public class Conversation {
 		attendees = atts;
 	}
 
+	@JsonIgnore
 	@XmlElementWrapper(name = "messages")
 	@XmlElement(name = "message")
 	@OneToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="conversation")
@@ -74,6 +77,7 @@ public class Conversation {
 	}
 	
 	@Transient
+	@JsonIgnore
 	public List<Integer> getAttendeesId() {
 		return attendeesId;
 	}

@@ -3,6 +3,8 @@ package model;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 @XmlRootElement
 @Entity
 @Table(name="message",schema="public")
@@ -39,6 +41,7 @@ public class Message {
 		this.textContent = textContent;
 	}
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinColumn(name="c_id",insertable=false, updatable=false)
 	public Conversation getConversation() {

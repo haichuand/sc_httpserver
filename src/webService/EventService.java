@@ -17,6 +17,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
+import util.UniqueIdGenerator;
 import dao.EventDao;
 import dao.UserDao;
 import dao.impl.EventDaoImpl;
@@ -74,8 +75,28 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String postEvent(Event event) {
-    	String eventId = eventDao.create(event);
-    	return eventId;
+		UserDao userDao = new UserDaoImpl();
+		String id = UniqueIdGenerator.generateId(Event.class.getSimpleName(),
+				event.getCreatorId());
+		event.setEventId(id);
+		
+		List<Integer> attendeesId = event.getAttendeesId();
+//		List<User> attendees = new LinkedList();
+//		Set<Event> eventSet = new HashSet<Event>();
+		Set<User> attendeeSet = new HashSet<User>();
+		//eventSet.add(event);
+		if (attendeesId != null && !attendeesId.isEmpty()) {
+			for (int i = 0; i < attendeesId.size(); i++) {
+				int uId = attendeesId.get(i);
+				User userTemp = userDao.getUser(uId);
+				//userTemp.setEvents(eventSet);
+				attendeeSet.add(userTemp);
+			}
+		}
+		//attendeeSet = new HashSet(attendees);
+		event.setAttendees(attendeeSet);
+		eventDao.create(event);
+    	return event.getEventId();
     }
     
     @POST

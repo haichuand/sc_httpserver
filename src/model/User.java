@@ -21,6 +21,7 @@ public class User {
 	private String lastName;
 	private String userName;
 	private Set<Event> events = new HashSet<>();
+	private Set<Conversation> convsations = new HashSet<>();
 
 	public User() {}
     
@@ -114,13 +115,23 @@ public class User {
     
     @XmlElementWrapper (name="events")
     @XmlElement(name="event")
-    @ManyToMany(fetch = FetchType.EAGER,cascade=CascadeType.ALL, mappedBy="attendees")
+    @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="attendees")
     public Set<Event> getEvents() {
-    	//System.out.println("getEvent !!!!!!!!!!!!!!!!!!!!!!1\n\n");
 		return events;
 	}
 
 	public void setEvents(Set<Event> events) {
 		this.events = events;
+	}
+	
+	@XmlElementWrapper (name="conversations")
+	@XmlElement(name="conversation")
+	@ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="attendees")
+	public Set<Conversation> getConvsations() {
+		return convsations;
+	}
+
+	public void setConvsations(Set<Conversation> convsations) {
+		this.convsations = convsations;
 	}
 }

@@ -1,10 +1,13 @@
 package model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+
 @Embeddable
-public class MessagePrimaryKey {
+public class MessagePrimaryKey implements Serializable{
 	
 	private String cId;
 	private int uId;
@@ -32,8 +35,23 @@ public class MessagePrimaryKey {
 	public long getTimestamp() {
 		return timestamp;
 	}
-	
+
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
+	
+	public boolean equals(MessagePrimaryKey other) {
+		return cId == other.cId && uId == other.uId && timestamp == other.timestamp;
+	}
+	
+	@Override
+    public int hashCode() {
+        int hash = 5;
+        hash = hash + (this.cId != null ? this.cId.hashCode() : 0);
+        hash = hash + (int) (this.uId ^ (this.uId >>> 32));
+        hash = hash + (int)this.timestamp;
+        return hash;
+    }
+	
+	
 }

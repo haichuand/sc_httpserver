@@ -1,9 +1,6 @@
 package model;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -14,7 +11,8 @@ public class Message {
     private MessagePrimaryKey messageKey;
 	private String mediaId;
 	private String textContent;
-	
+	private Conversation conversation;
+
 	@EmbeddedId
 	public MessagePrimaryKey getMessageKey() {
 		return messageKey;
@@ -39,5 +37,15 @@ public class Message {
 	}
 	public void setTextContent(String textContent) {
 		this.textContent = textContent;
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@JoinColumn(name="c_id",insertable=false, updatable=false)
+	public Conversation getConversation() {
+		return conversation;
+	}
+
+	public void setConversation(Conversation conversation) {
+		this.conversation = conversation;
 	}
 }

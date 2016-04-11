@@ -70,7 +70,7 @@ public class ConversationService {
         return new LinkedList<>(attendees);
     }
     
-    // Event data from the client source to create a new Event object, returned in JSON format.  
+    //Conversation data from the client source to create a new Conversation object, returned in JSON format.  
    	@POST
     @Path("/createConversation")
     @Consumes(MediaType.APPLICATION_JSON)

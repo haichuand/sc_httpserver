@@ -52,30 +52,11 @@ public class EventDaoImpl implements EventDao {
 
 	@Override
 	public void edit(Event event) {
-		UserDao userDao = new UserDaoImpl();
 		Session session = factory.openSession();
 		Transaction tx = null;
-		
-		List<Integer> attendeesId = event.getAttendeesId();
-		//List<User> attendees = new LinkedList();
-		//Set<Event> eventSet = new HashSet<Event>();
-		Set<User> attendeeSet = new HashSet<>();
 
 		try {
 			tx = session.beginTransaction();
-			//eventSet.add(event);
-
-			if (attendeesId != null && !attendeesId.isEmpty()) {
-				for (int i = 0; i < attendeesId.size(); i++) {
-					int uId = attendeesId.get(i);
-					User userTemp = userDao.getUser(uId);
-					//userTemp.setEvents(eventSet);
-					attendeeSet.add(userTemp);
-				}
-			}
-			//attendeeSet = new HashSet(attendees);
-			event.setAttendees(attendeeSet);
-			
 			session.update(event);
 			tx.commit();
 		} catch (HibernateException e) {

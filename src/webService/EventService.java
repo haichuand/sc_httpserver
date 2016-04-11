@@ -104,6 +104,20 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String editEvent(Event event) {
+    	UserDao userDao = new UserDaoImpl();
+    	
+    	List<Integer> attendeesId = event.getAttendeesId();
+		Set<User> attendeeSet = new HashSet<>();
+
+		if (attendeesId != null && !attendeesId.isEmpty()) {
+			for (int i = 0; i < attendeesId.size(); i++) {
+				int uId = attendeesId.get(i);
+				User userTemp = userDao.getUser(uId);
+				attendeeSet.add(userTemp);
+			}
+		}
+		event.setAttendees(attendeeSet);
+		
     	eventDao.edit(event);
     	return "Update Event Successfully";
     }

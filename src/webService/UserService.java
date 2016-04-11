@@ -18,21 +18,12 @@ import javax.ws.rs.core.Request;
 
 import dao.UserDao;
 import dao.impl.UserDaoImpl;
+import model.Event;
 import model.User;
 
 @Path("/user")
 public class UserService {
-	private static String U_ID = "uId";
-	private static String MEDIA_ID = "mediaId";
-	private static String GCM_ID= "gcmId";
-	private static String EMAIL = "email";
-	private static String PHONE_NUMBER = "phoneNumber";
-	private static String FIRST_NAME = "firstName";
-	private static String LAST_NAME = "lastName";
-	private static String USER_NAME = "userName";
-	private static Set events = new HashSet<>(0);
 	
-	private User user = new User();
 	private static UserDao userDao = new UserDaoImpl();
 	
 	// The @Context annotation allows us to have certain contextual objects
@@ -61,21 +52,16 @@ public class UserService {
     	User user = userDao.getUser(userId);
 
     	System.out.println("client is request the info of user: " + userId);
-        //User userNew = new User(2,"mediaID","googleId","fzudxj@gmail","123345","xuejing","dong","emma");
-        //userDao.create(userNew);
-
-    	user.setEvents(new HashSet());
     	return user;
     }
     
     @GET
-    @Path("/userEventsInfo/{userId}")
+    @Path("/userEvents/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getUserById(@PathParam("userId")int userId) {
-    	User user = userDao.getUser(userId);
-
+    public Set<Event> getEvensByUserId(@PathParam("userId")int userId) {
+    	Set<Event> events = userDao.getUserEvents(userId);
     	System.out.println("client is request the info of user: " + userId);
-    	return user;
+    	return events;
     }
     
     // Use data from the client source to create a new User object, returned in JSON format.  

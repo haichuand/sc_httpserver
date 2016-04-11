@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.*;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 
 @XmlRootElement
 @Entity
@@ -105,6 +107,7 @@ public class Event {
 		this.createTime = createTime;
 	}
 	
+	
 	@XmlElementWrapper (name="attendees")
     @XmlElement(name="attendee")
 	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
@@ -112,7 +115,6 @@ public class Event {
     		    joinColumns=@JoinColumn(name="event_id"), 
     			inverseJoinColumns=@JoinColumn(name="u_id"))  
 	public Set<User> getAttendees() {
-		System.out.println ("get attendees \n\n\n\n");
 		return attendees;
 	}
 
@@ -120,6 +122,7 @@ public class Event {
 		this.attendees = attendees;
 	}
 	
+	@JsonIgnore
 	@Transient
 	public List<Integer> getAttendeesId() {
 		return attendeesId;

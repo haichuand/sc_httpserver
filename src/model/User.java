@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.xml.bind.annotation.*;
 import javax.persistence.*;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 @XmlRootElement
 @Entity
 @Table(name = "user",schema="public")
@@ -113,6 +115,7 @@ public class User {
     	this.userName = userName;
     }
     
+    @JsonIgnore
     @XmlElementWrapper (name="events")
     @XmlElement(name="event")
     @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="attendees")
@@ -124,6 +127,7 @@ public class User {
 		this.events = events;
 	}
 	
+	@JsonIgnore
 	@XmlElementWrapper (name="conversations")
 	@XmlElement(name="conversation")
 	@ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="attendees")

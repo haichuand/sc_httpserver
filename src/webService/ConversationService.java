@@ -58,10 +58,18 @@ public class ConversationService {
     @GET
     @Path("{conversationId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Conversation getConversationById(@PathParam("conversationId")String conversationId) {
-    	Conversation conversation = conversationDao.getConversation(conversationId);
-    	System.out.println("client is request the info of user: " + conversationId);
-    	conversation.setAttendees(new HashSet<User>());
+    public Conversation getConversationById(@PathParam("conversationId")String convId) {
+    	Conversation conversation = conversationDao.getConversation(convId);
+    	System.out.println("client is request the info of user: " + convId);
+    	Set<User> atts = conversationDao.getAttendees(convId);
+    	List attendeesId = new LinkedList<>();
+    	for(User att: atts) {
+    		attendeesId.add(att.getuId());
+    		att.setConvsations(new HashSet<Conversation>());
+    		att.setEvents(new HashSet<Event>());
+    	}
+    	conversation.setAttendeesId(attendeesId);
+    	conversation.setAttendees(atts);
     	conversation.setMessages(new LinkedList<Message>());
         return conversation;
     }

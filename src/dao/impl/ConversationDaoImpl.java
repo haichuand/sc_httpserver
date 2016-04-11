@@ -110,7 +110,7 @@ public class ConversationDaoImpl implements ConversationDao {
 	public Set getAttendees(String convId) {
 		return getConversation(convId).getAttendees();
 	}
-
+	
 	@Override
 	public List getMessages(String convId) {
 		return getConversation(convId).getMessages();

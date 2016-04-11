@@ -81,19 +81,15 @@ public class EventService {
 		event.setEventId(id);
 		
 		List<Integer> attendeesId = event.getAttendeesId();
-//		List<User> attendees = new LinkedList();
-//		Set<Event> eventSet = new HashSet<Event>();
 		Set<User> attendeeSet = new HashSet<User>();
-		//eventSet.add(event);
+		
 		if (attendeesId != null && !attendeesId.isEmpty()) {
 			for (int i = 0; i < attendeesId.size(); i++) {
 				int uId = attendeesId.get(i);
 				User userTemp = userDao.getUser(uId);
-				//userTemp.setEvents(eventSet);
 				attendeeSet.add(userTemp);
 			}
 		}
-		//attendeeSet = new HashSet(attendees);
 		event.setAttendees(attendeeSet);
 		eventDao.create(event);
     	return event.getEventId();

@@ -21,7 +21,6 @@ import javax.ws.rs.core.Request;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
-import org.json.*;
 
 import model.Conversation;
 import model.Event;

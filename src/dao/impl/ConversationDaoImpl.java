@@ -9,6 +9,7 @@ import org.hibernate.cfg.Configuration;
 
 import model.Conversation;
 import model.Event;
+import model.Message;
 import model.User;
 
 import java.util.HashSet;
@@ -104,6 +105,29 @@ public class ConversationDaoImpl implements ConversationDao {
 		} finally {
 			session.close();
 		}
+	}
+	
+	@Override
+	public void addMessage(Message msg) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		String convId = msg.getMessageKey().getcId();
+		Conversation conv = getConversation(convId);
+		msg.setConversation(conv);
+		
+		try {
+			tx = session.beginTransaction();
+			session.save(msg);
+			tx.commit();
+		} catch (HibernateException e) {
+			System.out.println("Error");
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		
 	}
 
 	@Override

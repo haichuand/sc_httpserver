@@ -24,6 +24,7 @@ import org.codehaus.jackson.node.ArrayNode;
 
 import model.Conversation;
 import model.Event;
+import model.Message;
 import model.User;
 import dao.ConversationDao;
 import dao.UserDao;
@@ -60,7 +61,8 @@ public class ConversationService {
     public Conversation getConversationById(@PathParam("conversationId")String conversationId) {
     	Conversation conversation = conversationDao.getConversation(conversationId);
     	System.out.println("client is request the info of user: " + conversationId);
-    	//conversation.setAttendees(new HashSet<User>());
+    	conversation.setAttendees(new HashSet<User>());
+    	conversation.setMessages(new LinkedList<Message>());
         return conversation;
     }
     
@@ -106,4 +108,15 @@ public class ConversationService {
    		
    		return "conversation is successfully saved on server: "+convId;
     }
+   	
+  //Conversation data from the client source to create a new Conversation object, returned in JSON format.  
+   	@POST
+    @Path("/addMessage")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addMessagetoConv(Message msg) {
+   		conversationDao.addMessage(msg);
+   		return "message is successfully saved on server";
+   	}
+   	
 }

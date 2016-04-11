@@ -69,7 +69,7 @@ public class Conversation {
 		return messages;
 	}
 
-	public void setMessages(List<Message> msgs) {
+	public void setMessages(List msgs) {
 		messages = msgs;
 	}
 	

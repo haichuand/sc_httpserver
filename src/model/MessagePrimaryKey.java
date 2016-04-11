@@ -10,8 +10,10 @@ import javax.persistence.Embeddable;
 public class MessagePrimaryKey implements Serializable{
 	
 	private String cId;
-	private int uId;
+	private int senderId;
 	private long timestamp;
+	
+	public MessagePrimaryKey() {}
 	
 	@Column(name = "c_id")
 	public String getcId() {
@@ -23,12 +25,12 @@ public class MessagePrimaryKey implements Serializable{
 	}
 	
 	@Column(name = "sender_id")
-	public int getuId() {
-		return uId;
+	public int getSenderId() {
+		return senderId;
 	}
 	
-	public void setuId(int uId) {
-		this.uId = uId;
+	public void setSenderId(int senderId) {
+		this.senderId = senderId;
 	}
 	
 	@Column(name = "timestamp")
@@ -40,15 +42,16 @@ public class MessagePrimaryKey implements Serializable{
 		this.timestamp = timestamp;
 	}
 	
-	public boolean equals(MessagePrimaryKey other) {
-		return cId == other.cId && uId == other.uId && timestamp == other.timestamp;
+	@Override
+	public boolean equals(Object other) {
+		return cId == ((MessagePrimaryKey)other).cId && senderId == ((MessagePrimaryKey)other).senderId && timestamp == ((MessagePrimaryKey)other).timestamp;
 	}
 	
 	@Override
     public int hashCode() {
         int hash = 5;
         hash = hash + (this.cId != null ? this.cId.hashCode() : 0);
-        hash = hash + (int) (this.uId ^ (this.uId >>> 32));
+        hash = hash + (int) (this.senderId ^ (this.senderId >>> 32));
         hash = hash + (int)this.timestamp;
         return hash;
     }

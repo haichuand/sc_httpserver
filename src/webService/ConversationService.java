@@ -15,8 +15,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.json.*;
 
 import model.Conversation;
 import model.Event;
@@ -62,17 +67,21 @@ public class ConversationService {
     
     @GET
     @Path("/conversationAttendees/{convId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Integer> getConversationAttendees(@PathParam("convId")String convId) {
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getConversationAttendees(@PathParam("convId")String convId) {
     	System.out.println("client is request the list of attendees in conversation: " + convId);
-    	List<Integer> ids = new LinkedList<>();
-    	Set<User> attendees = conversationDao.getAttendees(convId);
-    	for(User att: attendees) {
-    		ids.add(att.getuId());
+    	List<User> attendees = new LinkedList<>(conversationDao.getAttendees(convId));
+    	String result = "{\"attendeesId\": [";
+    	if(!attendees.isEmpty()) {
+    		for(int i = 0; i < attendees.size(); i++) {
+    			result += attendees.get(i).getuId();
+    			if(i < attendees.size()-1)
+    				result += ", ";
+    		}
+    		result += "]}";
     	}
-    	return ids;
-    }
-    
+    	return result;
+    }    
     //Conversation data from the client source to create a new Conversation object, returned in JSON format.  
    	@POST
     @Path("/createConversation")

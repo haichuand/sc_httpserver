@@ -118,7 +118,7 @@ public class User {
     @JsonIgnore
     @XmlElementWrapper (name="events")
     @XmlElement(name="event")
-    @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL, mappedBy="attendees")
+    @ManyToMany(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE}, mappedBy="attendees")
     public Set<Event> getEvents() {
 		return events;
 	}

@@ -110,7 +110,7 @@ public class Event {
 	
 	@XmlElementWrapper (name="attendees")
     @XmlElement(name="attendee")
-	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)  
+	@ManyToMany(fetch = FetchType.LAZY, cascade= {CascadeType.PERSIST,CascadeType.MERGE})  
     @JoinTable(name="event_attendee", 
     		    joinColumns=@JoinColumn(name="event_id"), 
     			inverseJoinColumns=@JoinColumn(name="u_id"))  

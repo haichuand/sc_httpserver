@@ -28,15 +28,6 @@ import model.User;
 
 @Path("/event")
 public class EventService {
-	private static String EVENT_ID = "eventId";
-	private static String EVENT_TYPE = "eventType";
-	private static String TITLE = "title";
-	private static String LOCATION = "location";
-	private static String START_TIME = "startTime";
-	private static String END_TIME = "endTime";
-	private static String CREATOR_ID = "creatorId";
-	private static String CREATE_TIME = "createTime";
-	private static String ATTENDEES = "attendees";
 	
 	private static EventDao eventDao = new EventDaoImpl();
 	
@@ -114,7 +105,7 @@ public class EventService {
 		event.setAttendees(attendeeSet);
 		
     	eventDao.edit(event);
-    	return "Update Event Successfully";
+    	return "{ \"eventId\": " +"\"" + event.getEventId() +"\"" +"}";
     }
     
 	@DELETE

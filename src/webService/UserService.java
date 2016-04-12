@@ -76,20 +76,20 @@ public class UserService {
     
     // Use data from the client source to create a new User object, returned in JSON format.  
     @POST
-    @Path("/createuser")
+    @Path("/createUser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String postUser(User user) {
         int id = userDao.create (user);		         
-        return String.valueOf(id);                 
+        return "{\"uId\": "+ String.valueOf(id) + "}" ;                 
     }
     
     @POST
-    @Path("/edituser")
+    @Path("/editUser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String updateUser(User user) {
         userDao.edit(user);		         
-        return "Successfully updated!";                 
+        return "{\"uId\": "+ String.valueOf(user.getuId()) + "}" ;                 
     }
 }

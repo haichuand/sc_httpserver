@@ -122,7 +122,6 @@ public class Event {
 		this.attendees = attendees;
 	}
 	
-	@JsonIgnore
 	@Transient
 	public List<Integer> getAttendeesId() {
 		return attendeesId;

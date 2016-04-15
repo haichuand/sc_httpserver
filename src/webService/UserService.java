@@ -51,8 +51,31 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public User getUserBasicInfoById(@PathParam("userId")int userId) {
     	User user = userDao.getUser(userId);
-    	user.setPassword(null);
+    	if(user != null)
+    		user.setPassword(null);
     	System.out.println("client is request the info of user: " + userId);
+    	return user;
+    }
+    
+    @GET
+    @Path("/getUserByEmail/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public User getUserByEmail(@PathParam("email")String email) {
+    	User user = userDao.getUserByEmail(email);
+    	if(user != null)
+    		user.setPassword(null);
+    	System.out.println("client is request the info of user: " + email);
+    	return user;
+    }
+    
+    @GET
+    @Path("/getUserByPhoneNumber/{phoneNumber}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public User getUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber) {
+    	User user = userDao.getUserByPhoneNumber(phoneNumber);
+    	if(user != null)
+    		user.setPassword(null);
+    	System.out.println("client is request the info of user: " + phoneNumber);
     	return user;
     }
     

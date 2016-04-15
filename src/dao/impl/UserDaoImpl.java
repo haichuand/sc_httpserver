@@ -1,6 +1,7 @@
 package dao.impl;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -8,6 +9,8 @@ import org.hibernate.cfg.Configuration;
 
 import model.User;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import dao.UserDao;
@@ -124,11 +127,51 @@ public class UserDaoImpl implements UserDao {
 	
 	@Override
 	public User getUserByEmail(String email) {
+		Session session = factory.openSession();
+        Transaction tx = null;
+        List<User> queryResult = new LinkedList<>();
+        try{
+        	tx = session.beginTransaction();
+        	Query query = session.createQuery("from User where email = :email ");
+        	query.setParameter("email", email);
+        	queryResult = query.list();
+        	tx.commit();
+        } catch (HibernateException e) {
+        	System.out.println("Error");
+            if (tx!=null) tx.rollback();
+            	e.printStackTrace(); 
+        } finally {
+            session.close(); 
+        }
+        
+        if(!queryResult.isEmpty())
+        	return queryResult.get(0);
+        
 		return null;
 	}
 	
 	@Override
 	public User getUserByPhoneNumber(String phoneNumber) {
+		Session session = factory.openSession();
+        Transaction tx = null;
+        List<User> queryResult = new LinkedList<>();
+        try{
+        	tx = session.beginTransaction();
+        	Query query = session.createQuery("from User where phoneNumber = :phoneNumber ");
+        	query.setParameter("phoneNumber", phoneNumber);
+        	queryResult = query.list();
+        	tx.commit();
+        } catch (HibernateException e) {
+        	System.out.println("Error");
+            if (tx!=null) tx.rollback();
+            	e.printStackTrace(); 
+        } finally {
+            session.close(); 
+        }
+        
+        if(!queryResult.isEmpty())
+        	return queryResult.get(0);
+        
 		return null;
 	}
 }

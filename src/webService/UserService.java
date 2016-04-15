@@ -85,9 +85,12 @@ public class UserService {
     public String getUserGcmId(@PathParam("userId")int userId) {
     	User user = userDao.getUser(userId);
     	String gcmId = null;
-    	if(user != null)
+    	if(user != null) {
     		gcmId = user.getGcmId();
-    	return "{\"gcmId\": \"" +gcmId + "\"}" ; 
+    		return "{\"gcmId\": \"" +gcmId + "\"}" ; 
+    	}
+    	
+    	return "{\"gcmId\": " +gcmId + "}" ;
     }
     
     @GET

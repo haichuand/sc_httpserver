@@ -120,6 +120,34 @@ public class UserService {
     	return friends;
     }
     
+    @GET
+    @Path("/verifyUserByEmail/{email}/{password}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String verifyUserByEmail(@PathParam("email")String email, @PathParam("password")String password) {
+    	User user = userDao.getUserByEmail(email);
+    	if(user == null)
+    		return "{\"result\": \"No user found!\"}";
+    	else if (!user.getPassword().equals(password)){
+    		return "{\"result\": \"Wrong passowrd!\"}";
+    		
+    	}else
+    		return "{\"result\": \"Correct passowrd!\"}";
+    }
+    
+    @GET
+    @Path("/verifyUserByPhoneNumber/{phoneNumber}/{password}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String verifyUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber, @PathParam("password")String password) {
+    	User user = userDao.getUserByPhoneNumber(phoneNumber);
+    	if(user == null)
+    		return "{\"result\": \"No user found!\"}";
+    	else if (!user.getPassword().equals(password)){
+    		return "{\"result\": \"Wrong passowrd!\"}";
+    		
+    	}else
+    		return "{\"result\": \"Correct passowrd!\"}";
+    }
+    
     // Use data from the client source to create a new User object, returned in JSON format.  
     @POST
     @Path("/createUser")
@@ -156,14 +184,6 @@ public class UserService {
         userDao.edit(user);
         userDao.edit(friend);
         return "{\"friendId\": "+ friendId + "}" ;                 
-    }
-    
-    @POST
-    @Path("/verifyUserByEmail/{email}/{password}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String verifyUserByEmail(@PathParam("email")String email, @PathParam("password")String password) {
-    	String noUserFound =  "{\"verify result\": \"No user found!\"}" ;
-    	return noUserFound;
     }
     
 }

@@ -80,6 +80,17 @@ public class UserService {
     }
     
     @GET
+    @Path("/getUserGcmId/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getUserGcmId(@PathParam("userId")int userId) {
+    	User user = userDao.getUser(userId);
+    	String gcmId = null;
+    	if(user != null)
+    		gcmId = user.getGcmId();
+    	return "{\"gcmId\": \"" +gcmId + "\"}" ; 
+    }
+    
+    @GET
     @Path("/userEvents/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Event> getEvensByUserId(@PathParam("userId")int userId) {

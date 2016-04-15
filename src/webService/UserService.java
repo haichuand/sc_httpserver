@@ -51,7 +51,7 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public User getUserBasicInfoById(@PathParam("userId")int userId) {
     	User user = userDao.getUser(userId);
-
+    	user.setPassword(null);
     	System.out.println("client is request the info of user: " + userId);
     	return user;
     }
@@ -74,6 +74,15 @@ public class UserService {
     	return conversations;
     }
     
+    @GET
+    @Path("/userFriendList/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Set<User> getFriendsByUserId(@PathParam("userId")int userId) {
+    	Set<User> friends = userDao.getUser(userId).getFriends();
+    	System.out.println("client is request the friend list of user: " + userId);
+    	return friends;
+    }
+    
     // Use data from the client source to create a new User object, returned in JSON format.  
     @POST
     @Path("/createUser")
@@ -92,4 +101,32 @@ public class UserService {
         userDao.edit(user);		         
         return "{\"uId\": "+ String.valueOf(user.getuId()) + "}" ;                 
     }
+    
+    @POST
+    @Path("/addFriend/{userId}/{friendId}")
+    public String addFriend(@PathParam("userId")int userId, @PathParam("friendId")int friendId) {
+        User user = userDao.getUser(userId);
+        User friend = userDao.getUser(friendId);
+        
+        Set<User> userFriends = user.getFriends();
+        Set<User> friendFriends = friend.getFriends();
+        
+        userFriends.add(friend);
+        friendFriends.add(user);
+        user.setFriends(userFriends);
+        friend.setFriends(friendFriends);
+        
+        userDao.edit(user);
+        userDao.edit(friend);
+        return "{\"friendId\": "+ friendId + "}" ;                 
+    }
+    
+    @POST
+    @Path("/verifyUserByEmail/{email}/{password}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String verifyUserByEmail(@PathParam("email")String email, @PathParam("password")String password) {
+    	String noUserFound =  "{\"verify result\": \"No user found!\"}" ;
+    	return noUserFound;
+    }
+    
 }

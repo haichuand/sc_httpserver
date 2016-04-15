@@ -94,23 +94,11 @@ public class EventDaoImpl implements EventDao {
 		Session session = factory.openSession();
 		Event event = null;
 		Transaction tx = null;
-		List<Integer> attendeesId = new LinkedList<>();
-		Set<User> attendees = null;
+
 		try {
 			tx = session.beginTransaction();
 			event = (Event)session.get(Event.class, eventId);
-			System.out.println("GetEvent for " + eventId);
-			attendees = event.getAttendees();
-			
-
-			for(User user: attendees) {
-				attendeesId.add(user.getuId());
-			}
-			event.setAttendeesId(attendeesId);
-			
-			
 			tx.commit();
-			System.out.println("after commit");
 		} catch (HibernateException e) {
 			System.out.println("Error");
 			if (tx != null)

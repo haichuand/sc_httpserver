@@ -51,7 +51,7 @@ public class Conversation {
 	
 	@XmlElementWrapper(name = "attendees")
 	@XmlElement(name = "attendee")
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinTable(name = "conversation_attendee", 
 				joinColumns = @JoinColumn(name = "c_id"), 
 				inverseJoinColumns = @JoinColumn(name = "u_id"))
@@ -77,7 +77,6 @@ public class Conversation {
 	}
 	
 	@Transient
-	@JsonIgnore
 	public List<Integer> getAttendeesId() {
 		return attendeesId;
 	}

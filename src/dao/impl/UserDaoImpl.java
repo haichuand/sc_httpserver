@@ -7,7 +7,9 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import model.User;
+
 import java.util.Set;
+
 import dao.UserDao;
 
 
@@ -108,5 +110,25 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public Set getUserConversations(int uId) {
 		return getUser(uId).getConvsations();
+	}
+	
+	@Override
+	public void addFriend (User user) {
+		
+	}
+	
+	@Override
+	public Set getUserFriends (int u_id) {
+		return null;
+	}
+	
+	@Override
+	public User getUserByEmail(String email) {
+		return null;
+	}
+	
+	@Override
+	public User getUserByPhoneNumber(String phoneNumber) {
+		return null;
 	}
 }

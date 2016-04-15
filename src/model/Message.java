@@ -42,7 +42,7 @@ public class Message {
 	}
 	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
 	@JoinColumn(name="c_id",insertable=false, updatable=false)
 	public Conversation getConversation() {
 		return conversation;

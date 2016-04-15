@@ -1,6 +1,7 @@
 package webService;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ import dao.EventDao;
 import dao.UserDao;
 import dao.impl.EventDaoImpl;
 import dao.impl.UserDaoImpl;
+import model.Conversation;
 import model.Event;
 import model.User;
 
@@ -56,6 +58,16 @@ public class EventService {
     public Event getEventById(@PathParam("eventId")String eventId) {
     	Event event = eventDao.getEvent(eventId);
     	System.out.println("client is request the info of user: " + eventId);
+    	Set<User> atts = event.getAttendees();
+    	List attendeesId = new LinkedList<>();
+    	for(User att: atts) {
+    		att.setPassword(null);
+    		attendeesId.add(att.getuId());
+    		att.setConvsations(new HashSet<Conversation>());
+    		att.setEvents(new HashSet<Event>());
+    	}
+    	event.setAttendeesId(attendeesId);
+    	event.setAttendees(atts);
         return event;
     }
     

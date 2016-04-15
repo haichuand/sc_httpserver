@@ -1,6 +1,7 @@
 package dao;
 
 import model.User;
+
 import java.util.Set;
 
 public interface UserDao {
@@ -10,4 +11,8 @@ public interface UserDao {
 	public User getUser(int uId);
 	public Set getUserEvents(int uId);
 	public Set getUserConversations(int uId);
+	public void addFriend (User user);
+	public Set getUserFriends (int u_id);
+	public User getUserByEmail(String email);
+	public User getUserByPhoneNumber(String phoneNumber);
 }

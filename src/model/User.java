@@ -22,8 +22,10 @@ public class User {
 	private String firstName;
 	private String lastName;
 	private String userName;
+	private String password;
 	private Set<Event> events = new HashSet<>();
 	private Set<Conversation> convsations = new HashSet<>();
+	private Set<User> friends = new HashSet<>();
 
 	public User() {}
     
@@ -115,10 +117,19 @@ public class User {
     	this.userName = userName;
     }
     
+    @Column(name = "password")
+    public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+    
     @JsonIgnore
     @XmlElementWrapper (name="events")
     @XmlElement(name="event")
-    @ManyToMany(fetch = FetchType.LAZY,cascade={CascadeType.PERSIST,CascadeType.MERGE}, mappedBy="attendees")
+    @ManyToMany(fetch = FetchType.LAZY,cascade={CascadeType.ALL}, mappedBy="attendees")
     public Set<Event> getEvents() {
 		return events;
 	}
@@ -137,5 +148,20 @@ public class User {
 
 	public void setConvsations(Set<Conversation> convsations) {
 		this.convsations = convsations;
+	}
+	
+	@JsonIgnore
+	@XmlElementWrapper (name="friends")
+	@XmlElement(name="friend")
+	@ManyToMany (fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "user_friend",
+            joinColumns ={ @JoinColumn(name = "u_id") },
+            inverseJoinColumns ={ @JoinColumn(name = "friend_id") })
+	public Set<User> getFriends() {
+		return friends;
+	}
+	
+	public void setFriends(Set<User> friends) {
+		this.friends = friends;
 	}
 }

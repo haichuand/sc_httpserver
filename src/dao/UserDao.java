@@ -2,6 +2,7 @@ package dao;
 
 import model.User;
 
+import java.util.List;
 import java.util.Set;
 
 public interface UserDao {
@@ -15,4 +16,5 @@ public interface UserDao {
 	public Set getUserFriends (int u_id);
 	public User getUserByEmail(String email);
 	public User getUserByPhoneNumber(String phoneNumber);
+	public List<User> getAllUser();
 }

@@ -92,6 +92,25 @@ public class ConversationService {
     		result += "]}";
     	}
     	return result;
+    }
+    
+    @GET
+    @Path("/conversationAttendeesGcmId/{convId}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getConversationAttendeesGcmId(@PathParam("convId")String convId) {
+    	System.out.println("client is request the list of attendees in conversation: " + convId);
+    	List<User> attendees = new LinkedList<>(conversationDao.getAttendees(convId));
+    	String result = "{\"attendeesGcmId\": [";
+    	if(!attendees.isEmpty()) {
+    		for(int i = 0; i < attendees.size(); i++) {
+    			User att = attendees.get(i);
+    			result = result + "{\"uId\" : "+ att.getuId()+", "+"\"gcmId\": \""+ att.getGcmId()+"\"}";
+    			if(i < attendees.size()-1)
+    				result += ", ";
+    		}
+    		result += "]}";
+    	}
+    	return result;
     }    
     
     @GET

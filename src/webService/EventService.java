@@ -71,6 +71,25 @@ public class EventService {
         return event;
     }
     
+    @GET
+    @Path("/eventAttendeesGcmId/{eventId}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getEventAttendeesGcmId(@PathParam("eventId")String eventId) {
+    	System.out.println("client is request the list of attendees in event: " + eventId);
+    	List<User> attendees = new LinkedList<>(eventDao.getEventAttendees(eventId));
+    	String result = "{\"attendeesGcmId\": [";
+    	if(!attendees.isEmpty()) {
+    		for(int i = 0; i < attendees.size(); i++) {
+    			User att = attendees.get(i);
+    			result = result + "{\"uId\" : "+ att.getuId()+", "+"\"gcmId\": \""+ att.getGcmId()+"\"}";
+    			if(i < attendees.size()-1)
+    				result += ", ";
+    		}
+    		result += "]}";
+    	}
+    	return result;
+    }    
+    
     // Event data from the client source to create a new Event object, returned in JSON format.  
 	@POST
     @Path("/createEvent")

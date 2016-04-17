@@ -174,4 +174,24 @@ public class UserDaoImpl implements UserDao {
         
 		return null;
 	}
+	
+	@Override
+	public List<User> getAllUser() {
+		Session session = factory.openSession();
+        Transaction tx = null;
+        List<User> queryResult = null;
+        try{
+        	tx = session.beginTransaction();
+        	queryResult = session.createCriteria(User.class).list();
+        	tx.commit();
+        } catch (HibernateException e) {
+        	System.out.println("Error");
+            if (tx!=null) tx.rollback();
+            	e.printStackTrace(); 
+        } finally {
+            session.close(); 
+        }
+        
+        return queryResult;
+	}
 }

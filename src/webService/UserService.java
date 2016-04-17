@@ -1,6 +1,7 @@
 package webService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -91,6 +92,24 @@ public class UserService {
     	}
     	
     	return "{\"gcmId\": " +gcmId + "}" ;
+    }
+    
+    @GET
+    @Path("/getAllUserIdAndGcmId")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllUserGcmId() {
+    	List<User> users = userDao.getAllUser();
+    	String result = "{\"usersGcmId\": [";
+    	if(!users.isEmpty()) {
+    		for(int i = 0; i < users.size(); i++) {
+    			User user = users.get(i);
+    			result = result + "{\"uId\" : "+ user.getuId()+", "+"\"gcmId\": \""+ user.getGcmId()+"\"}";
+    			if(i < users.size()-1)
+    				result += ", ";
+    		}
+    		result += "]}";
+    	}
+    	return result;
     }
     
     @GET

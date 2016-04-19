@@ -19,8 +19,10 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
 import util.UniqueIdGenerator;
+import dao.ConversationDao;
 import dao.EventDao;
 import dao.UserDao;
+import dao.impl.ConversationDaoImpl;
 import dao.impl.EventDaoImpl;
 import dao.impl.UserDaoImpl;
 import model.Conversation;
@@ -30,6 +32,7 @@ import model.User;
 
 @Path("/event")
 public class EventService {
+	private static int STATUS_OK = 0;
 	
 	private static EventDao eventDao = new EventDaoImpl();
 	
@@ -57,7 +60,7 @@ public class EventService {
     @Produces(MediaType.APPLICATION_JSON)
     public Event getEventById(@PathParam("eventId")String eventId) {
     	Event event = eventDao.getEvent(eventId);
-    	System.out.println("client is request the info of user: " + eventId);
+    	System.out.println("client is request the info of event: " + eventId);
     	Set<User> atts = event.getAttendees();
     	List attendeesId = new LinkedList<>();
     	for(User att: atts) {
@@ -66,6 +69,9 @@ public class EventService {
     		att.setConvsations(new HashSet<Conversation>());
     		att.setEvents(new HashSet<Event>());
     	}
+    	if(event.getConversation() != null) 
+    		event.setConversationId(event.getConversation().getcId());
+    	event.setConversation(null);
     	event.setAttendeesId(attendeesId);
     	event.setAttendees(atts);
         return event;
@@ -96,7 +102,8 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String postEvent(Event event) {
-		UserDao userDao = new UserDaoImpl();
+		UserDao userDao = new UserDaoImpl();;
+		
 		String id = UniqueIdGenerator.generateId(Event.class.getSimpleName(),
 				event.getCreatorId());
 		event.setEventId(id);
@@ -111,10 +118,41 @@ public class EventService {
 				attendeeSet.add(userTemp);
 			}
 		}
+		
 		event.setAttendees(attendeeSet);
 		eventDao.create(event);
     	return "{ \"eventId\": " +"\"" + event.getEventId() +"\"" +"}";
     }
+	
+	@POST
+    @Path("/addConversation/{eventId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String addConversation(Conversation conv, @PathParam("eventId")String eventId) {
+   		UserDao userDao = new UserDaoImpl();
+		ConversationDao conversationDao = new ConversationDaoImpl();
+		List<Integer> attendeesId = conv.getAttendeesId();
+		Set<User> attendees = new HashSet();
+		Set<Conversation> convs = new HashSet<>();
+
+		if (attendeesId != null && !attendeesId.isEmpty()) {
+			for (int i = 0; i < attendeesId.size(); i++) {
+				int uId = attendeesId.get(i);
+				User userTemp = userDao.getUser(uId);
+				attendees.add(userTemp);
+			}
+		}
+		conv.setAttendees(attendees);
+   		conversationDao.create(conv);
+   		
+   		Event event = eventDao.getEvent(eventId);
+   		event.setConversation(conv);
+   		eventDao.edit(event);
+   		
+   		String convId = conv.getcId();
+   		
+   		return "{ \"status\": " + this.STATUS_OK +"}";
+	}
     
     @POST
     @Path("/editEvent")
@@ -133,10 +171,12 @@ public class EventService {
 				attendeeSet.add(userTemp);
 			}
 		}
+
+		event.setAttendees(attendeeSet);
 		event.setAttendees(attendeeSet);
 		
     	eventDao.edit(event);
-    	return "{ \"eventId\": " +"\"" + event.getEventId() +"\"" +"}";
+    	return "{ \"status\": " + this.STATUS_OK +"}";
     }
     
 	@DELETE
@@ -144,7 +184,7 @@ public class EventService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String deleteEvent(@PathParam("eventId")String eventId) {
 		eventDao.delete(eventId);
-		return "Delete Event Successfully";
+		return "{ \"status\": " + this.STATUS_OK +"}";
 	}
 	
 	

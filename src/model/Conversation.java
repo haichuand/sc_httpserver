@@ -17,6 +17,7 @@ public class Conversation {
 	private String cId;
 	private String title;
 	private int creatorId;
+	private Set<Event> event;
 	private Set<User> attendees;
 	private List<Message> messages;
 	private List<Integer> attendeesId;
@@ -47,6 +48,16 @@ public class Conversation {
 
 	public void setCreatorId(int creatorId) {
 		this.creatorId = creatorId;
+	}
+	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "conversation", cascade = CascadeType.ALL)
+	public Set<Event> getEvent() {
+		return event;
+	}
+
+	public void setEvent(Set<Event> event) {
+		this.event = event;
 	}
 	
 	@XmlElementWrapper(name = "attendees")

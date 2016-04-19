@@ -25,6 +25,8 @@ public class Event {
 	private long endTime;
 	private int creatorId;
 	private long createTime;
+	private String conversationId;
+	private Conversation conversation;
 	private Set<User> attendees = new HashSet<>();
 	private List<Integer> attendeesId;
 
@@ -107,6 +109,24 @@ public class Event {
 		this.createTime = createTime;
 	}
 	
+	@Transient
+	public String getConversationId() {
+		return conversationId;
+	}
+
+	public void setConversationId(String conversationId) {
+		this.conversationId = conversationId;
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "c_id", nullable = true)
+	public Conversation getConversation() {
+		return conversation;
+	}
+
+	public void setConversation(Conversation conversation) {
+		this.conversation = conversation;
+	}
 	
 	@XmlElementWrapper (name="attendees")
     @XmlElement(name="attendee")

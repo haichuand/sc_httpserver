@@ -25,6 +25,9 @@ import model.User;
 
 @Path("/user")
 public class UserService {
+	private final int STATUS_OK = 0;
+	private final int STATUS_NO_USER = 1;
+	private final int STATUS_WRONG_PASSWORD = 2;
 	
 	private static UserDao userDao = new UserDaoImpl();
 	
@@ -145,12 +148,12 @@ public class UserService {
     public String verifyUserByEmail(@PathParam("email")String email, @PathParam("password")String password) {
     	User user = userDao.getUserByEmail(email);
     	if(user == null)
-    		return "{\"result\": \"No user found!\"}";
+    		return "{\"status\": "+ this.STATUS_NO_USER + "}";
     	else if (!user.getPassword().equals(password)){
-    		return "{\"result\": \"Wrong passowrd!\"}";
+    		return "{\"status\": "+ this.STATUS_WRONG_PASSWORD + "}";
     		
     	}else
-    		return "{\"result\": \"Correct passowrd!\"}";
+    		return "{\"status\": "+ this.STATUS_OK + "}";
     }
     
     @GET
@@ -159,12 +162,12 @@ public class UserService {
     public String verifyUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber, @PathParam("password")String password) {
     	User user = userDao.getUserByPhoneNumber(phoneNumber);
     	if(user == null)
-    		return "{\"result\": \"No user found!\"}";
+    		return "{\"status\": "+ this.STATUS_NO_USER + "}";
     	else if (!user.getPassword().equals(password)){
-    		return "{\"result\": \"Wrong passowrd!\"}";
+    		return "{\"status\": "+ this.STATUS_WRONG_PASSWORD + "}";
     		
     	}else
-    		return "{\"result\": \"Correct passowrd!\"}";
+    		return "{\"status\": "+ this.STATUS_OK + "}";
     }
     
     // Use data from the client source to create a new User object, returned in JSON format.  
@@ -174,7 +177,7 @@ public class UserService {
     @Produces(MediaType.TEXT_PLAIN)
     public String postUser(User user) {
         int id = userDao.create (user);		         
-        return "{\"uId\": "+ String.valueOf(id) + "}" ;                 
+        return "{ \"status\": " + this.STATUS_OK +"}";                 
     }
     
     @POST
@@ -183,7 +186,7 @@ public class UserService {
     @Produces(MediaType.TEXT_PLAIN)
     public String updateUser(User user) {
         userDao.edit(user);		         
-        return "{\"uId\": "+ String.valueOf(user.getuId()) + "}" ;                 
+        return "{ \"status\": " + this.STATUS_OK +"}";                 
     }
     
     @POST
@@ -202,7 +205,7 @@ public class UserService {
         
         userDao.edit(user);
         userDao.edit(friend);
-        return "{\"friendId\": "+ friendId + "}" ;                 
+        return "{ \"status\": " + this.STATUS_OK +"}";                 
     }
     
 }

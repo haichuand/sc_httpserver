@@ -145,7 +145,7 @@ public class ConversationService {
    		conversationDao.create(conv);
    		String convId = conv.getcId();
    		
-   		return "{ \"cId\": " +"\"" + convId +"\"" +"}";
+   		return "{ \"status\": " + 0 +"}";
     }
    	
   //Conversation data from the client source to create a new Conversation object, returned in JSON format.  
@@ -178,7 +178,7 @@ public class ConversationService {
 		}
 		conv.setAttendees(attendees);
 		conversationDao.edit(conv);
-		return "{ \"cId\": " +"\"" + conv.getcId() +"\"" +"}";
+		return "{ \"status\": " + 0 +"}";
 	}
    	
 }

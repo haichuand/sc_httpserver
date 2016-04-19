@@ -195,6 +195,9 @@ public class UserService {
         User user = userDao.getUser(userId);
         User friend = userDao.getUser(friendId);
         
+        if(friend == null)
+        	return "{ \"status\": " + this.STATUS_NO_USER +"}";
+        
         Set<User> userFriends = user.getFriends();
         Set<User> friendFriends = friend.getFriends();
         

@@ -28,6 +28,7 @@ public class UserService {
 	private final int STATUS_OK = 0;
 	private final int STATUS_NO_USER = 1;
 	private final int STATUS_WRONG_PASSWORD = 2;
+	private final int STATUS_ERROR = 3;
 	
 	private static UserDao userDao = new UserDaoImpl();
 	
@@ -116,6 +117,24 @@ public class UserService {
     }
     
     @GET
+    @Path("/getAllUserId")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getAllUserId() {
+    	List<User> users = userDao.getAllUser();
+    	String result = "{\"allUserId\": [";
+    	if(!users.isEmpty()) {
+    		for(int i = 0; i < users.size(); i++) {
+    			User user = users.get(i);
+    			result += user.getuId() ;
+    			if(i < users.size()-1)
+    				result += ", ";
+    		}
+    		result += "]}";
+    	}
+    	return result;
+    }
+    
+    @GET
     @Path("/userEvents/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Event> getEvensByUserId(@PathParam("userId")int userId) {
@@ -138,11 +157,13 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Set<User> getFriendsByUserId(@PathParam("userId")int userId) {
     	Set<User> friends = userDao.getUser(userId).getFriends();
+    	for(User friend: friends) 
+    		friend.setPassword(null);
     	System.out.println("client is request the friend list of user: " + userId);
     	return friends;
     }
     
-    @GET
+    @POST
     @Path("/verifyUserByEmail/{email}/{password}")
     @Produces(MediaType.TEXT_PLAIN)
     public String verifyUserByEmail(@PathParam("email")String email, @PathParam("password")String password) {
@@ -156,7 +177,7 @@ public class UserService {
     		return "{\"status\": "+ this.STATUS_OK + "}";
     }
     
-    @GET
+    @POST
     @Path("/verifyUserByPhoneNumber/{phoneNumber}/{password}")
     @Produces(MediaType.TEXT_PLAIN)
     public String verifyUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber, @PathParam("password")String password) {
@@ -176,8 +197,25 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String postUser(User user) {
-        int id = userDao.create (user);		         
-        return "{ \"status\": " + this.STATUS_OK +"}";                 
+    	String email = user.getEmail();
+    	String phoneNumber = user.getPhoneNumber();
+    	
+    	if(email != null && !email.isEmpty()) {
+    		User existringUserWithEmail = userDao.getUserByEmail(email);
+    		if( existringUserWithEmail != null) {
+    			return "{ \"status\": " + this.STATUS_ERROR +"}";
+    		}
+    	}
+    	
+    	if(phoneNumber != null && !phoneNumber.isEmpty()) {
+    		User existringUserWithPhoneNumber = userDao.getUserByPhoneNumber(phoneNumber);
+    		if( existringUserWithPhoneNumber != null) {
+    			return "{ \"status\": " + this.STATUS_ERROR +"}";
+    		}
+    	}
+    	
+        int id = userDao.create (user);	
+        return "{ \"uId\": " + id +"}";                 
     }
     
     @POST
@@ -191,24 +229,36 @@ public class UserService {
     
     @POST
     @Path("/addFriend/{userId}/{friendId}")
+    @Produces(MediaType.APPLICATION_JSON)
     public String addFriend(@PathParam("userId")int userId, @PathParam("friendId")int friendId) {
         User user = userDao.getUser(userId);
         User friend = userDao.getUser(friendId);
         
-        if(friend == null)
+        if(friend == null || user == null)
         	return "{ \"status\": " + this.STATUS_NO_USER +"}";
         
         Set<User> userFriends = user.getFriends();
-        Set<User> friendFriends = friend.getFriends();
         
         userFriends.add(friend);
-        friendFriends.add(user);
         user.setFriends(userFriends);
-        friend.setFriends(friendFriends);
         
         userDao.edit(user);
-        userDao.edit(friend);
         return "{ \"status\": " + this.STATUS_OK +"}";                 
     }
+    
+    @POST
+    @Path("/updateUserGcmId/{userId}/{newGcmId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String updateGcmId(@PathParam("userId")int userId, @PathParam("newGcmId")String newGcmId) {
+    	User user = userDao.getUser(userId);
+    	if(user == null) {
+    		return "{ \"status\": " + this.STATUS_NO_USER +"}";
+    	}
+    	
+    	user.setGcmId(newGcmId);
+    	userDao.edit(user);
+    	return "{ \"status\": " + this.STATUS_OK +"}";
+    }
+    
     
 }

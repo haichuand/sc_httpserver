@@ -22,6 +22,7 @@ import javax.ws.rs.core.Request;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 
+import util.StatusContainer;
 import model.Conversation;
 import model.Event;
 import model.Message;
@@ -35,7 +36,9 @@ import dao.impl.UserDaoImpl;
 
 @Path("/conversation")
 public class ConversationService {
+	
 	private static ConversationDao conversationDao = new ConversationDaoImpl();
+	private static UserDao userDao = new UserDaoImpl();
 	
 	// The @Context annotation allows us to have certain contextual objects
     // injected into this class.
@@ -61,15 +64,21 @@ public class ConversationService {
     @Produces(MediaType.APPLICATION_JSON)
     public Conversation getConversationById(@PathParam("conversationId")String convId) {
     	Conversation conversation = conversationDao.getConversation(convId);
-    	System.out.println("client is request the info of user: " + convId);
+    	
+    	if(conversation == null) {
+    		return null;
+    	}
+    	
     	Set<User> atts = conversation.getAttendees();
     	List attendeesId = new LinkedList<>();
+    	
     	for(User att: atts) {
     		att.setPassword(null);
     		attendeesId.add(att.getuId());
     		att.setConvsations(new HashSet<Conversation>());
     		att.setEvents(new HashSet<Event>());
     	}
+    	
     	conversation.setAttendeesId(attendeesId);
     	conversation.setAttendees(atts);
     	conversation.setMessages(null);
@@ -80,27 +89,39 @@ public class ConversationService {
     @Path("/conversationAttendeesId/{convId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getConversationAttendees(@PathParam("convId")String convId) {
-    	System.out.println("client is request the list of attendees in conversation: " + convId);
+    	Conversation conv = conversationDao.getConversation(convId);
+    	
+    	if(conv == null) 
+    		return "{ \"status\": " + StatusContainer.STATUS_NO_CONVERSATION +"}";
+    	
     	List<User> attendees = new LinkedList<>(conversationDao.getAttendees(convId));
-    	String result = "{\"attendeesId\": [";
-    	if(!attendees.isEmpty()) {
+    	
+    	if(attendees != null && !attendees.isEmpty()) {
+    		String result = "{\"attendeesId\": [";
     		for(int i = 0; i < attendees.size(); i++) {
     			result += attendees.get(i).getuId();
     			if(i < attendees.size()-1)
     				result += ", ";
     		}
     		result += "]}";
+    		return result;
     	}
-    	return result;
+    	
+    	return "{ \"status\": " + StatusContainer.STATUS_ERROR +"}";
     }
     
     @GET
     @Path("/conversationAttendeesGcmId/{convId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getConversationAttendeesGcmId(@PathParam("convId")String convId) {
-    	System.out.println("client is request the list of attendees in conversation: " + convId);
+    	Conversation conv = conversationDao.getConversation(convId);
+    	
+    	if(conv == null) 
+    		return "{ \"status\": " + StatusContainer.STATUS_NO_CONVERSATION +"}";
+    	
     	List<User> attendees = new LinkedList<>(conversationDao.getAttendees(convId));
     	String result = "{\"attendeesGcmId\": [";
+    	
     	if(!attendees.isEmpty()) {
     		for(int i = 0; i < attendees.size(); i++) {
     			User att = attendees.get(i);
@@ -128,10 +149,9 @@ public class ConversationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String createConversation(Conversation conv) {
-   		UserDao userDao = new UserDaoImpl();
 		
 		List<Integer> attendeesId = conv.getAttendeesId();
-		Set<User> attendees = new HashSet();
+		Set<User> attendees = new HashSet<>();
 		Set<Conversation> convs = new HashSet<>();
 
 		if (attendeesId != null && !attendeesId.isEmpty()) {
@@ -145,17 +165,28 @@ public class ConversationService {
    		conversationDao.create(conv);
    		String convId = conv.getcId();
    		
-   		return "{ \"status\": " + 0 +"}";
+   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
     }
    	
-  //Conversation data from the client source to create a new Conversation object, returned in JSON format.  
    	@POST
     @Path("/addMessage")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public MessagePrimaryKey addMessagetoConv(Message msg) {
+    public String addMessagetoConv(Message msg) {
    		conversationDao.addMessage(msg);
-   		return msg.getMessageKey();
+   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+   	}
+   	
+   	@POST
+    @Path("/backupMessages")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String syncConvMessages(List<Message> msgs) {
+   		if(msgs != null) {
+   			for(Message msg: msgs)
+   				conversationDao.addMessage(msg);
+   		}
+   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
    	}
    	
 	@POST
@@ -163,7 +194,6 @@ public class ConversationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public String updateConversation(Conversation conv) {
-		UserDao userDao = new UserDaoImpl();
 		
 		List<Integer> attendeesId = conv.getAttendeesId();
 		Set<User> attendees = new HashSet();
@@ -173,12 +203,17 @@ public class ConversationService {
 			for (int i = 0; i < attendeesId.size(); i++) {
 				int uId = attendeesId.get(i);
 				User userTemp = userDao.getUser(uId);
+				if(userTemp == null) {
+					return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
+				}
 				attendees.add(userTemp);
 			}
 		}
+		
 		conv.setAttendees(attendees);
 		conversationDao.edit(conv);
-		return "{ \"status\": " + 0 +"}";
+		
+		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
 	}
    	
 }

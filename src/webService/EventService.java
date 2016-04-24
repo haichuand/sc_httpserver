@@ -18,6 +18,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
+import util.StatusContainer;
 import util.UniqueIdGenerator;
 import dao.ConversationDao;
 import dao.EventDao;
@@ -32,9 +33,10 @@ import model.User;
 
 @Path("/event")
 public class EventService {
-	private static int STATUS_OK = 0;
 	
 	private static EventDao eventDao = new EventDaoImpl();
+	private static UserDao userDao = new UserDaoImpl();
+	private static ConversationDao conversationDao = new ConversationDaoImpl();
 	
 	// The @Context annotation allows us to have certain contextual objects
     // injected into this class.
@@ -60,28 +62,37 @@ public class EventService {
     @Produces(MediaType.APPLICATION_JSON)
     public Event getEventById(@PathParam("eventId")String eventId) {
     	Event event = eventDao.getEvent(eventId);
-    	System.out.println("client is request the info of event: " + eventId);
+    	
+    	if(event == null)
+    		return null;
+    	
     	Set<User> atts = event.getAttendees();
     	List attendeesId = new LinkedList<>();
+    	
     	for(User att: atts) {
     		att.setPassword(null);
     		attendeesId.add(att.getuId());
     		att.setConvsations(new HashSet<Conversation>());
     		att.setEvents(new HashSet<Event>());
     	}
+    	
     	if(event.getConversation() != null) 
     		event.setConversationId(event.getConversation().getcId());
+    	
     	event.setConversation(null);
     	event.setAttendeesId(attendeesId);
     	event.setAttendees(atts);
-        return event;
+        
+    	return event;
     }
     
     @GET
     @Path("/eventAttendeesGcmId/{eventId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getEventAttendeesGcmId(@PathParam("eventId")String eventId) {
-    	System.out.println("client is request the list of attendees in event: " + eventId);
+    	if(eventDao.getEvent(eventId) == null)
+    		return "{ \"status\": " + StatusContainer.STATUS_NO_EVENT +"}";
+    	
     	List<User> attendees = new LinkedList<>(eventDao.getEventAttendees(eventId));
     	String result = "{\"attendeesGcmId\": [";
     	if(!attendees.isEmpty()) {
@@ -102,8 +113,6 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String postEvent(Event event) {
-		UserDao userDao = new UserDaoImpl();;
-		
 		String id = UniqueIdGenerator.generateId(Event.class.getSimpleName(),
 				event.getCreatorId());
 		event.setEventId(id);
@@ -129,8 +138,6 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String addConversation(Conversation conv, @PathParam("eventId")String eventId) {
-   		UserDao userDao = new UserDaoImpl();
-		ConversationDao conversationDao = new ConversationDaoImpl();
 		List<Integer> attendeesId = conv.getAttendeesId();
 		Set<User> attendees = new HashSet();
 		Set<Conversation> convs = new HashSet<>();
@@ -151,7 +158,7 @@ public class EventService {
    		
    		String convId = conv.getcId();
    		
-   		return "{ \"status\": " + this.STATUS_OK +"}";
+   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
 	}
     
     @POST
@@ -159,7 +166,6 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String editEvent(Event event) {
-    	UserDao userDao = new UserDaoImpl();
     	
     	List<Integer> attendeesId = event.getAttendeesId();
 		Set<User> attendeeSet = new HashSet<>();
@@ -168,6 +174,8 @@ public class EventService {
 			for (int i = 0; i < attendeesId.size(); i++) {
 				int uId = attendeesId.get(i);
 				User userTemp = userDao.getUser(uId);
+				if(userTemp == null)
+					return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
 				attendeeSet.add(userTemp);
 			}
 		}
@@ -176,7 +184,7 @@ public class EventService {
 		event.setAttendees(attendeeSet);
 		
     	eventDao.edit(event);
-    	return "{ \"status\": " + this.STATUS_OK +"}";
+    	return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
     }
     
 	@DELETE
@@ -184,7 +192,7 @@ public class EventService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String deleteEvent(@PathParam("eventId")String eventId) {
 		eventDao.delete(eventId);
-		return "{ \"status\": " + this.STATUS_OK +"}";
+		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
 	}
 	
 	

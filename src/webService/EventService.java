@@ -18,7 +18,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
-import util.StatusContainer;
+import util.StatusCode;
 import util.UniqueIdGenerator;
 import dao.ConversationDao;
 import dao.EventDao;
@@ -91,7 +91,7 @@ public class EventService {
     @Produces(MediaType.TEXT_PLAIN)
     public String getEventAttendeesGcmId(@PathParam("eventId")String eventId) {
     	if(eventDao.getEvent(eventId) == null)
-    		return "{ \"status\": " + StatusContainer.STATUS_NO_EVENT +"}";
+    		return "{ \"status\": " + StatusCode.STATUS_NO_EVENT +"}";
     	
     	List<User> attendees = new LinkedList<>(eventDao.getEventAttendees(eventId));
     	String result = "{\"attendeesGcmId\": [";
@@ -158,7 +158,7 @@ public class EventService {
    		
    		String convId = conv.getcId();
    		
-   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+   		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
 	}
     
     @POST
@@ -175,7 +175,7 @@ public class EventService {
 				int uId = attendeesId.get(i);
 				User userTemp = userDao.getUser(uId);
 				if(userTemp == null)
-					return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
+					return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
 				attendeeSet.add(userTemp);
 			}
 		}
@@ -184,15 +184,18 @@ public class EventService {
 		event.setAttendees(attendeeSet);
 		
     	eventDao.edit(event);
-    	return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+    	return "{ \"status\": " + StatusCode.STATUS_OK +"}";
     }
     
 	@DELETE
 	@Path("/deleteEvent/{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String deleteEvent(@PathParam("eventId")String eventId) {
+		if(eventDao.getEvent(eventId) == null)
+			return "{ \"status\": " + StatusCode.STATUS_NO_EVENT +"}";
+		
 		eventDao.delete(eventId);
-		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
 	}
 	
 	

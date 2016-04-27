@@ -22,7 +22,7 @@ import javax.ws.rs.core.Request;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 
-import util.StatusContainer;
+import util.StatusCode;
 import model.Conversation;
 import model.Event;
 import model.Message;
@@ -92,7 +92,7 @@ public class ConversationService {
     	Conversation conv = conversationDao.getConversation(convId);
     	
     	if(conv == null) 
-    		return "{ \"status\": " + StatusContainer.STATUS_NO_CONVERSATION +"}";
+    		return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
     	
     	List<User> attendees = new LinkedList<>(conversationDao.getAttendees(convId));
     	
@@ -107,7 +107,7 @@ public class ConversationService {
     		return result;
     	}
     	
-    	return "{ \"status\": " + StatusContainer.STATUS_ERROR +"}";
+    	return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
     }
     
     @GET
@@ -117,7 +117,7 @@ public class ConversationService {
     	Conversation conv = conversationDao.getConversation(convId);
     	
     	if(conv == null) 
-    		return "{ \"status\": " + StatusContainer.STATUS_NO_CONVERSATION +"}";
+    		return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
     	
     	List<User> attendees = new LinkedList<>(conversationDao.getAttendees(convId));
     	String result = "{\"attendeesGcmId\": [";
@@ -149,6 +149,9 @@ public class ConversationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String createConversation(Conversation conv) {
+   		
+   		if(conversationDao.getConversation(conv.getcId()) != null)
+   			return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
 		
 		List<Integer> attendeesId = conv.getAttendeesId();
 		Set<User> attendees = new HashSet<>();
@@ -158,6 +161,8 @@ public class ConversationService {
 			for (int i = 0; i < attendeesId.size(); i++) {
 				int uId = attendeesId.get(i);
 				User userTemp = userDao.getUser(uId);
+				if(userTemp == null)
+					return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
 				attendees.add(userTemp);
 			}
 		}
@@ -165,7 +170,7 @@ public class ConversationService {
    		conversationDao.create(conv);
    		String convId = conv.getcId();
    		
-   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+   		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
     }
    	
    	@POST
@@ -174,7 +179,7 @@ public class ConversationService {
     @Produces(MediaType.APPLICATION_JSON)
     public String addMessagetoConv(Message msg) {
    		conversationDao.addMessage(msg);
-   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+   		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
    	}
    	
    	@POST
@@ -186,7 +191,7 @@ public class ConversationService {
    			for(Message msg: msgs)
    				conversationDao.addMessage(msg);
    		}
-   		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+   		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
    	}
    	
 	@POST
@@ -204,7 +209,7 @@ public class ConversationService {
 				int uId = attendeesId.get(i);
 				User userTemp = userDao.getUser(uId);
 				if(userTemp == null) {
-					return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
+					return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
 				}
 				attendees.add(userTemp);
 			}
@@ -213,7 +218,7 @@ public class ConversationService {
 		conv.setAttendees(attendees);
 		conversationDao.edit(conv);
 		
-		return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
 	}
    	
 }

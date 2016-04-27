@@ -17,11 +17,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
-import util.StatusContainer;
+import util.StatusCode;
 import dao.UserDao;
 import dao.impl.UserDaoImpl;
 import model.Conversation;
+import model.EmailPassword;
 import model.Event;
+import model.PhoneNumberPassword;
 import model.User;
 
 @Path("/user")
@@ -55,7 +57,6 @@ public class UserService {
     	User user = userDao.getUser(userId);
     	if(user != null)
     		user.setPassword(null);
-    	System.out.println("client is request the info of user: " + userId);
     	return user;
     }
     
@@ -66,7 +67,6 @@ public class UserService {
     	User user = userDao.getUserByEmail(email);
     	if(user != null)
     		user.setPassword(null);
-    	System.out.println("client is request the info of user: " + email);
     	return user;
     }
     
@@ -93,7 +93,7 @@ public class UserService {
     		return "{\"gcmId\": \"" +gcmId + "\"}" ; 
     	}
     	
-    	return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
+    	return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     }
     
     @GET
@@ -146,7 +146,6 @@ public class UserService {
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Conversation> getConversationsByUserId(@PathParam("userId")int userId) {
     	Set<Conversation> conversations = userDao.getUserConversations(userId);
-    	System.out.println("client is request the info of user: " + userId);
     	return conversations;
     }
     
@@ -157,36 +156,46 @@ public class UserService {
     	Set<User> friends = userDao.getUser(userId).getFriends();
     	for(User friend: friends) 
     		friend.setPassword(null);
-    	System.out.println("client is request the friend list of user: " + userId);
     	return friends;
     }
     
     @POST
-    @Path("/verifyUserByEmail/{email}/{password}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String verifyUserByEmail(@PathParam("email")String email, @PathParam("password")String password) {
-    	User user = userDao.getUserByEmail(email);
-    	if(user == null)
-    		return "{\"status\": "+ StatusContainer.STATUS_NO_USER + "}";
-    	else if (!user.getPassword().equals(password)){
-    		return "{\"status\": "+ StatusContainer.STATUS_WRONG_PASSWORD + "}";
-    		
-    	}else
-    		return "{\"status\": "+ StatusContainer.STATUS_OK + "}";
+    @Path("/verifyUserByEmail")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String verifyUserByEmail(EmailPassword emailPassword) {
+    	if(emailPassword != null) {
+    		if(emailPassword.getEmail() != null) {
+    			User user = userDao.getUserByEmail(emailPassword.getEmail());
+    			if(user == null)
+    	    		return "{\"status\": "+ StatusCode.STATUS_NO_USER + "}";
+    			else if (!user.getPassword().equals(emailPassword.getPassword()))
+    	    		return "{\"status\": "+ StatusCode.STATUS_WRONG_PASSWORD + "}";
+    	    	else
+    	    		return "{\"status\": "+ StatusCode.STATUS_OK + "}";
+    		}
+    	}
+    	return "{\"status\": "+ StatusCode.STATUS_ERROR + "}";
+	
     }
     
     @POST
-    @Path("/verifyUserByPhoneNumber/{phoneNumber}/{password}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String verifyUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber, @PathParam("password")String password) {
-    	User user = userDao.getUserByPhoneNumber(phoneNumber);
-    	if(user == null)
-    		return "{\"status\": "+ StatusContainer.STATUS_NO_USER + "}";
-    	else if (!user.getPassword().equals(password)){
-    		return "{\"status\": "+ StatusContainer.STATUS_WRONG_PASSWORD + "}";
-    		
-    	}else
-    		return "{\"status\": "+ StatusContainer.STATUS_OK + "}";
+    @Path("/verifyUserByPhoneNumber")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String verifyUserByPhoneNumber(PhoneNumberPassword phonePassword) {
+    	if(phonePassword != null) {
+    		if(phonePassword.getPhoneNumber() != null) {
+    			User user = userDao.getUserByPhoneNumber(phonePassword.getPhoneNumber());
+    			if(user == null)
+    	    		return "{\"status\": "+ StatusCode.STATUS_NO_USER + "}";
+    			else if (!user.getPassword().equals(phonePassword.getPassword()))
+    	    		return "{\"status\": "+ StatusCode.STATUS_WRONG_PASSWORD + "}";
+    	    	else
+    	    		return "{\"status\": "+ StatusCode.STATUS_OK + "}";
+    		}
+    	}
+    	return "{\"status\": "+ StatusCode.STATUS_ERROR + "}";
     }
     
     // Use data from the client source to create a new User object, returned in JSON format.  
@@ -201,14 +210,14 @@ public class UserService {
     	if(email != null && !email.isEmpty()) {
     		User existringUserWithEmail = userDao.getUserByEmail(email);
     		if( existringUserWithEmail != null) {
-    			return "{ \"status\": " + StatusContainer.STATUS_ERROR +"}";
+    			return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
     		}
     	}
     	
     	if(phoneNumber != null && !phoneNumber.isEmpty()) {
     		User existringUserWithPhoneNumber = userDao.getUserByPhoneNumber(phoneNumber);
     		if( existringUserWithPhoneNumber != null) {
-    			return "{ \"status\": " + StatusContainer.STATUS_ERROR +"}";
+    			return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
     		}
     	}
     	
@@ -219,10 +228,10 @@ public class UserService {
     @POST
     @Path("/editUser")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public String updateUser(User user) {
         userDao.edit(user);		         
-        return "{ \"status\": " + StatusContainer.STATUS_OK +"}";                 
+        return "{ \"status\": " + StatusCode.STATUS_OK +"}";                 
     }
     
     @POST
@@ -233,7 +242,7 @@ public class UserService {
         User friend = userDao.getUser(friendId);
         
         if(friend == null || user == null)
-        	return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
+        	return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
         
         Set<User> userFriends = user.getFriends();
         
@@ -241,7 +250,7 @@ public class UserService {
         user.setFriends(userFriends);
         
         userDao.edit(user);
-        return "{ \"status\": " + StatusContainer.STATUS_OK +"}";                 
+        return "{ \"status\": " + StatusCode.STATUS_OK +"}";                 
     }
     
     @POST
@@ -250,12 +259,12 @@ public class UserService {
     public String updateGcmId(@PathParam("userId")int userId, @PathParam("newGcmId")String newGcmId) {
     	User user = userDao.getUser(userId);
     	if(user == null) {
-    		return "{ \"status\": " + StatusContainer.STATUS_NO_USER +"}";
+    		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     	}
     	
     	user.setGcmId(newGcmId);
     	userDao.edit(user);
-    	return "{ \"status\": " + StatusContainer.STATUS_OK +"}";
+    	return "{ \"status\": " + StatusCode.STATUS_OK +"}";
     }
     
     

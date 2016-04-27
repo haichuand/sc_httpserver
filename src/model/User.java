@@ -164,4 +164,16 @@ public class User {
 	public void setFriends(Set<User> friends) {
 		this.friends = friends;
 	}
+	
+	public String toJsonString() {
+		String jsonString = "{\"uId\":" + this.uId +
+							", \"gcmId\":" + "\"" +this.gcmId + "\"" +  
+ 							", \"mediaId\":" + "\"" + this.mediaId + "\"" +
+							", \"email\":" + "\"" + this.email + "\"" +
+							", \"phoneNumber\":" + "\"" + this.phoneNumber + "\"" +
+							", \"firstName\":" + "\"" + this.lastName + "\"" +
+							", \"userName\":" + "\"" + this.userName + "\"" +
+							"}";
+		return jsonString;
+	}
 }

@@ -172,7 +172,7 @@ public class UserService {
     			else if (!user.getPassword().equals(emailPassword.getPassword()))
     	    		return "{\"status\": "+ StatusCode.STATUS_WRONG_PASSWORD + "}";
     	    	else
-    	    		return "{\"status\": "+ StatusCode.STATUS_OK + "}";
+    	    		return user.toJsonString();
     		}
     	}
     	return "{\"status\": "+ StatusCode.STATUS_ERROR + "}";
@@ -192,7 +192,7 @@ public class UserService {
     			else if (!user.getPassword().equals(phonePassword.getPassword()))
     	    		return "{\"status\": "+ StatusCode.STATUS_WRONG_PASSWORD + "}";
     	    	else
-    	    		return "{\"status\": "+ StatusCode.STATUS_OK + "}";
+    	    		return user.toJsonString();
     		}
     	}
     	return "{\"status\": "+ StatusCode.STATUS_ERROR + "}";

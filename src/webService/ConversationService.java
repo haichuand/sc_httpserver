@@ -24,6 +24,8 @@ import org.codehaus.jackson.node.ArrayNode;
 
 import util.StatusCode;
 import model.Conversation;
+import model.ConversationAttendee;
+import model.ConversationTitle;
 import model.Event;
 import model.Message;
 import model.MessagePrimaryKey;
@@ -220,5 +222,77 @@ public class ConversationService {
 		
 		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
 	}
-   	
+	
+	@POST
+	@Path("/updateTitle")
+	@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	public String updateConversationTitle(ConversationTitle convTitle) {
+		String convId = convTitle.getcId();
+		String title = convTitle.getTitle();
+		
+		Conversation conv = conversationDao.getConversation(convId);
+		if(conv == null) 
+			return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
+		conv.setTitle(title);
+		conversationDao.edit(conv);
+		
+		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
+	}
+	
+	@POST
+	@Path("/addAttendee")
+	@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	public String addConversationAttendee(ConversationAttendee convAttendee) {
+		String convId = convAttendee.getcId();
+		int attendeeId = convAttendee.getAttendeeId();
+		
+		Conversation conv = conversationDao.getConversation(convId);
+		if(conv == null) 
+			return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
+		
+		User attendee = userDao.getUser(attendeeId);
+		if(attendee == null)
+			return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
+		
+		Set<User> curAttendees = conv.getAttendees();
+		curAttendees.add(attendee);
+		conv.setAttendees(curAttendees);
+
+		conversationDao.edit(conv);
+		
+		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
+	}
+	
+	@POST
+	@Path("/dropAttendee")
+	@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	public String dropConversationAttendee(ConversationAttendee convAttendee) {
+		String convId = convAttendee.getcId();
+		int attendeeId = convAttendee.getAttendeeId();
+		
+		Conversation conv = conversationDao.getConversation(convId);
+		if(conv == null) 
+			return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
+		
+		Set<User> curAttendees = conv.getAttendees();
+		User attendeeDrop = null;
+		boolean findAttendee = false;
+		for(User attendee: curAttendees) {
+			if(attendee.getuId() == attendeeId) {
+				attendeeDrop = attendee;
+				findAttendee = true;
+			}
+		}
+		if(!findAttendee)
+			return "{ \"status\": " + StatusCode.STATUS_NO_USER + "}";
+		
+		curAttendees.remove(attendeeDrop);
+		conv.setAttendees(curAttendees);
+		conversationDao.edit(conv);
+		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
+	}
+	
 }

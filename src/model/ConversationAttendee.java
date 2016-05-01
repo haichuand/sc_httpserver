@@ -1,11 +1,13 @@
 package model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ConversationAttendee {
 	private String cId;
-	private int attendeeId;
+	private List<Integer> attendeesId;
 	
 	public String getcId() {
 		return cId;
@@ -13,10 +15,10 @@ public class ConversationAttendee {
 	public void setcId(String cId) {
 		this.cId = cId;
 	}
-	public int getAttendeeId() {
-		return attendeeId;
+	public List<Integer> getAttendeesId() {
+		return attendeesId;
 	}
-	public void setTargetUid(int attendeeId) {
-		this.attendeeId = attendeeId;
+	public void setTargetUid(List<Integer> attendeesId) {
+		this.attendeesId = attendeesId;
 	}
 }

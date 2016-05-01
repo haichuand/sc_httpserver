@@ -1,5 +1,6 @@
 package webService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -204,7 +205,6 @@ public class ConversationService {
 		
 		List<Integer> attendeesId = conv.getAttendeesId();
 		Set<User> attendees = new HashSet();
-		Set<Conversation> convs = new HashSet<>();
 
 		if (attendeesId != null && !attendeesId.isEmpty()) {
 			for (int i = 0; i < attendeesId.size(); i++) {
@@ -241,23 +241,29 @@ public class ConversationService {
 	}
 	
 	@POST
-	@Path("/addAttendee")
+	@Path("/addAttendees")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public String addConversationAttendee(ConversationAttendee convAttendee) {
 		String convId = convAttendee.getcId();
-		int attendeeId = convAttendee.getAttendeeId();
+		List<Integer> attendeesId = convAttendee.getAttendeesId();
 		
 		Conversation conv = conversationDao.getConversation(convId);
 		if(conv == null) 
 			return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
 		
-		User attendee = userDao.getUser(attendeeId);
-		if(attendee == null)
-			return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
+		List<User> attendeesAdd = new ArrayList();
+		for(int attendeeId: attendeesId) {
+			User attendee = userDao.getUser(attendeeId);
+			if(attendee == null)
+				return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
+			attendeesAdd.add(attendee);
+		}
 		
 		Set<User> curAttendees = conv.getAttendees();
-		curAttendees.add(attendee);
+		for(User attendee: attendeesAdd)
+			curAttendees.add(attendee);
+
 		conv.setAttendees(curAttendees);
 
 		conversationDao.edit(conv);
@@ -266,30 +272,33 @@ public class ConversationService {
 	}
 	
 	@POST
-	@Path("/dropAttendee")
+	@Path("/dropAttendees")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	public String dropConversationAttendee(ConversationAttendee convAttendee) {
 		String convId = convAttendee.getcId();
-		int attendeeId = convAttendee.getAttendeeId();
+		List<Integer> attendeesId = convAttendee.getAttendeesId();
 		
 		Conversation conv = conversationDao.getConversation(convId);
 		if(conv == null) 
 			return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
 		
 		Set<User> curAttendees = conv.getAttendees();
-		User attendeeDrop = null;
+		List<User> attendeesDrop = new ArrayList();
 		boolean findAttendee = false;
 		for(User attendee: curAttendees) {
-			if(attendee.getuId() == attendeeId) {
-				attendeeDrop = attendee;
-				findAttendee = true;
+			for(int attendeeId: attendeesId) {
+				if(attendee.getuId() == attendeeId) {
+					attendeesDrop.add(attendee);
+					findAttendee = true;
+				}
 			}
 		}
 		if(!findAttendee)
 			return "{ \"status\": " + StatusCode.STATUS_NO_USER + "}";
+		for(User attendeeDrop: attendeesDrop)
+			curAttendees.remove(attendeeDrop);
 		
-		curAttendees.remove(attendeeDrop);
 		conv.setAttendees(curAttendees);
 		conversationDao.edit(conv);
 		return "{ \"status\": " + StatusCode.STATUS_OK +"}";

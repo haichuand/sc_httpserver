@@ -171,7 +171,8 @@ public class User {
  							", \"mediaId\":" + "\"" + this.mediaId + "\"" +
 							", \"email\":" + "\"" + this.email + "\"" +
 							", \"phoneNumber\":" + "\"" + this.phoneNumber + "\"" +
-							", \"firstName\":" + "\"" + this.lastName + "\"" +
+							", \"firstName\":" + "\"" + this.firstName + "\"" +
+							", \"lastName\":" + "\"" + this.lastName + "\"" +
 							", \"userName\":" + "\"" + this.userName + "\"" +
 							"}";
 		return jsonString;

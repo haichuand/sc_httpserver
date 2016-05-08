@@ -63,7 +63,7 @@ public class ConversationService {
     }
     
     @GET
-    @Path("{conversationId}")
+    @Path("/getConversation/{conversationId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Conversation getConversationById(@PathParam("conversationId")String convId) {
     	Conversation conversation = conversationDao.getConversation(convId);

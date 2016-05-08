@@ -58,7 +58,7 @@ public class EventService {
     }
     
     @GET
-    @Path("{eventId}")
+    @Path("/getEvent/{eventId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Event getEventById(@PathParam("eventId")String eventId) {
     	Event event = eventDao.getEvent(eventId);
@@ -138,9 +138,12 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String addConversation(Conversation conv, @PathParam("eventId")String eventId) {
+		Event event = eventDao.getEvent(eventId);
+		if(event == null)
+			return "{ \"status\": " + StatusCode.STATUS_NO_EVENT +"}";
+		
 		List<Integer> attendeesId = conv.getAttendeesId();
 		Set<User> attendees = new HashSet();
-		Set<Conversation> convs = new HashSet<>();
 
 		if (attendeesId != null && !attendeesId.isEmpty()) {
 			for (int i = 0; i < attendeesId.size(); i++) {
@@ -152,11 +155,8 @@ public class EventService {
 		conv.setAttendees(attendees);
    		conversationDao.create(conv);
    		
-   		Event event = eventDao.getEvent(eventId);
    		event.setConversation(conv);
    		eventDao.edit(event);
-   		
-   		String convId = conv.getcId();
    		
    		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
 	}
@@ -166,10 +166,18 @@ public class EventService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String editEvent(Event event) {
+    	if(eventDao.getEvent(event.getEventId()) == null)
+    		return "{ \"status\": " + StatusCode.STATUS_NO_EVENT +"}";
     	
     	List<Integer> attendeesId = event.getAttendeesId();
-		Set<User> attendeeSet = new HashSet<>();
-
+    	String convId = event.getConversationId();
+    	Conversation conv = conversationDao.getConversation(convId);
+		
+    	if(convId != null && conv == null) 
+    		return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
+    	
+    	Set<User> attendeeSet = new HashSet<>();
+			
 		if (attendeesId != null && !attendeesId.isEmpty()) {
 			for (int i = 0; i < attendeesId.size(); i++) {
 				int uId = attendeesId.get(i);
@@ -179,8 +187,9 @@ public class EventService {
 				attendeeSet.add(userTemp);
 			}
 		}
-
-		event.setAttendees(attendeeSet);
+		
+		
+		event.setConversation(conv);	
 		event.setAttendees(attendeeSet);
 		
     	eventDao.edit(event);

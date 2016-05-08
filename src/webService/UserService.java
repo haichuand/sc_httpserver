@@ -1,5 +1,6 @@
 package webService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,8 @@ import model.EmailPassword;
 import model.Event;
 import model.PhoneNumberPassword;
 import model.User;
+import model.UserBasic;
+import model.UserFriends;
 
 @Path("/user")
 public class UserService {
@@ -53,33 +56,34 @@ public class UserService {
     @GET
     @Path("/basicInfo/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getUserBasicInfoById(@PathParam("userId")int userId) {
+    public String getUserBasicInfoById(@PathParam("userId")int userId) {
     	User user = userDao.getUser(userId);
     	if(user != null)
-    		user.setPassword(null);
-    	return user;
+    		return user.toJsonString();
+    	else 
+    		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     }
     
     @GET
     @Path("/getUserByEmail/{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getUserByEmail(@PathParam("email")String email) {
+    public String getUserByEmail(@PathParam("email")String email) {
     	User user = userDao.getUserByEmail(email);
     	if(user != null)
-    		user.setPassword(null);
-    	return user;
+    		return user.toJsonString();
+    	else 
+    		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     }
     
     @GET
     @Path("/getUserByPhoneNumber/{phoneNumber}")
     @Produces(MediaType.APPLICATION_JSON)
-    public User getUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber) {
+    public String getUserByPhoneNumber(@PathParam("phoneNumber")String phoneNumber) {
     	User user = userDao.getUserByPhoneNumber(phoneNumber);
-    	if(user != null) {
-    		user.setPassword(null);
-    		return user;
-    	}
-    	return user;
+    	if(user != null)
+    		return user.toJsonString();
+    	else 
+    		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     }
     
     @GET
@@ -136,8 +140,21 @@ public class UserService {
     @Path("/userEvents/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Event> getEvensByUserId(@PathParam("userId")int userId) {
+    	User user = userDao.getUser(userId);
+    	if(user == null)
+    		return new HashSet<>();
+    	
     	Set<Event> events = userDao.getUserEvents(userId);
-    	System.out.println("client is request the info of user: " + userId);
+    	for(Event event: events) {
+    		event.setConversation(null);
+    		List<Integer> attendeesIds = new ArrayList<>();
+    		Set<User> attendeesList = event.getAttendees();
+    		for(User attendee: attendeesList) {
+    			attendee.setPassword(null);
+    			attendeesIds.add(attendee.getuId());
+    		}
+    		event.setAttendeesId(attendeesIds);
+    	}
     	return events;
     }
     
@@ -145,7 +162,21 @@ public class UserService {
     @Path("/userConversations/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Set<Conversation> getConversationsByUserId(@PathParam("userId")int userId) {
+    	User user = userDao.getUser(userId);
+    	
+    	if(user == null)
+    		return new HashSet<>();
+    	
     	Set<Conversation> conversations = userDao.getUserConversations(userId);
+    	for(Conversation conv: conversations) {
+    		List<Integer> attendeesIds = new ArrayList<>();
+    		Set<User> attendeesList = conv.getAttendees();
+    		for(User attendee: attendeesList) {
+    			attendee.setPassword(null);
+    			attendeesIds.add(attendee.getuId());
+    		}
+    		conv.setAttendeesId(attendeesIds);
+    	}
     	return conversations;
     }
     
@@ -153,6 +184,9 @@ public class UserService {
     @Path("/userFriendList/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Set<User> getFriendsByUserId(@PathParam("userId")int userId) {
+    	if(userDao.getUser(userId) == null)
+    		return new HashSet<>();
+    	
     	Set<User> friends = userDao.getUser(userId).getFriends();
     	for(User friend: friends) 
     		friend.setPassword(null);
@@ -229,26 +263,44 @@ public class UserService {
     @Path("/editUser")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateUser(User user) {
-        userDao.edit(user);		         
-        return "{ \"status\": " + StatusCode.STATUS_OK +"}";                 
+    public String updateUser(UserBasic userBasic) {
+    	User user = userDao.getUser(userBasic.getuId());
+    	if(user != null) {
+    		user.setEmail(userBasic.getEmail());
+    		user.setGcmId(userBasic.getGcmId());
+    		user.setMediaId(userBasic.getGcmId());
+    		user.setPhoneNumber(userBasic.getPhoneNumber());
+    		user.setFirstName(userBasic.getFirstName());
+    		user.setLastName(userBasic.getLastName());
+    		user.setUserName(userBasic.getUserName());
+    		user.setPassword(userBasic.getPassword());
+    		userDao.edit(user);	
+    		return "{ \"status\": " + StatusCode.STATUS_OK +"}"; 
+    	}
+    	else 
+    		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}"; 
+                        
     }
     
     @POST
-    @Path("/addFriend/{userId}/{friendId}")
+    @Path("/addFriends")
     @Produces(MediaType.APPLICATION_JSON)
-    public String addFriend(@PathParam("userId")int userId, @PathParam("friendId")int friendId) {
-        User user = userDao.getUser(userId);
-        User friend = userDao.getUser(friendId);
-        
-        if(friend == null || user == null)
+    public String addFriend(UserFriends ufs) {
+        User user = userDao.getUser(ufs.getuId());
+        if(user == null)
         	return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
         
+        List<Integer> friendsId = ufs.getFriendsId();
         Set<User> userFriends = user.getFriends();
         
-        userFriends.add(friend);
-        user.setFriends(userFriends);
+        for(int id: friendsId) {
+        	User friend = userDao.getUser(id);
+        	if(friend == null)
+            	return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
+        	userFriends.add(friend);
+        }
         
+        user.setFriends(userFriends);
         userDao.edit(user);
         return "{ \"status\": " + StatusCode.STATUS_OK +"}";                 
     }

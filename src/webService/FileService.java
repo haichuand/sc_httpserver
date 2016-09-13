@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -37,8 +39,21 @@ public class FileService {
     private static final String ROOT_DIR = "/home/ec2-user/apache-tomcat-8.0.32/webapps/SuperCaly/";
     private static final String UPLOAD_DIR = ROOT_DIR + "upload/";
 
+    private static final List<String> IMAGE_EXTENSIONS;
+    private static final List<String> VIDEO_EXTENSIONS;
+
     private static final long PURGE_UPLOADS_MS = 30 * 60000L; // Minutes
     private static Timer TIMER;
+
+    static {
+        IMAGE_EXTENSIONS = Arrays.asList(new String[]{
+            ".jpg", ".jpeg", ".png", ".gif"
+        });
+
+        VIDEO_EXTENSIONS = Arrays.asList(new String[]{
+            ".mp4"
+        });
+    }
 
     /**
      * Used for uploading image attachments.
@@ -61,6 +76,11 @@ public class FileService {
         String extension = "";
         if (filename.contains(".")) {
             extension = filename.substring(filename.lastIndexOf("."));
+
+            if (!IMAGE_EXTENSIONS.contains(extension.toLowerCase())) {
+                response.put("status", "INVALID_IMAGE_FORMAT");
+                return response.toString();
+            }
         }
 
         filename = UUID.randomUUID().toString() + extension;
@@ -109,6 +129,11 @@ public class FileService {
         String extension = "";
         if (filename.contains(".")) {
             extension = filename.substring(filename.lastIndexOf("."));
+
+            if (!VIDEO_EXTENSIONS.contains(extension.toLowerCase())) {
+                response.put("status", "INVALID_VIDEO_FORMAT");
+                return response.toString();
+            }
         }
 
         filename = UUID.randomUUID().toString() + extension;

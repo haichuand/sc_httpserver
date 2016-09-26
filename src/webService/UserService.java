@@ -87,29 +87,29 @@ public class UserService {
     }
     
     @GET
-    @Path("/getUserGcmId/{userId}")
+    @Path("/getUserFcmId/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getUserGcmId(@PathParam("userId")int userId) {
+    public String getUserFcmId(@PathParam("userId")int userId) {
     	User user = userDao.getUser(userId);
-    	String gcmId = null;
+    	String fcmId = null;
     	if(user != null) {
-    		gcmId = user.getGcmId();
-    		return "{\"gcmId\": \"" +gcmId + "\"}" ; 
+    		fcmId = user.getGcmId();
+    		return "{\"fcmId\": \"" +fcmId + "\"}" ; 
     	}
     	
     	return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     }
     
     @GET
-    @Path("/getAllUserIdAndGcmId")
+    @Path("/getAllUserIdAndFcmId")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllUserGcmId() {
+    public String getAllUserFcmId() {
     	List<User> users = userDao.getAllUser();
-    	String result = "{\"usersGcmId\": [";
+    	String result = "{\"usersFcmId\": [";
     	if(!users.isEmpty()) {
     		for(int i = 0; i < users.size(); i++) {
     			User user = users.get(i);
-    			result = result + "{\"uId\" : "+ user.getuId()+", "+"\"gcmId\": \""+ user.getGcmId()+"\"}";
+    			result = result + "{\"uId\" : "+ user.getuId()+", "+"\"fcmId\": \""+ user.getGcmId()+"\"}";
     			if(i < users.size()-1)
     				result += ", ";
     		}
@@ -306,15 +306,15 @@ public class UserService {
     }
     
     @POST
-    @Path("/updateUserGcmId/{userId}/{newGcmId}")
+    @Path("/updateUserFcmId/{userId}/{newFcmId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateGcmId(@PathParam("userId")int userId, @PathParam("newGcmId")String newGcmId) {
+    public String updateFcmId(@PathParam("userId")int userId, @PathParam("newFcmId")String newFcmId) {
     	User user = userDao.getUser(userId);
     	if(user == null) {
     		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     	}
     	
-    	user.setGcmId(newGcmId);
+    	user.setGcmId(newFcmId);
     	userDao.edit(user);
     	return "{ \"status\": " + StatusCode.STATUS_OK +"}";
     }

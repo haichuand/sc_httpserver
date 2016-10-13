@@ -1,7 +1,6 @@
 package model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.*;
@@ -15,7 +14,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class User {
 	
 	private int uId;
-	private String gcmId;
+	private String fcmId;
 	private String mediaId;
 	private String email;
 	private String phoneNumber;
@@ -33,10 +32,10 @@ public class User {
 		this.uId = uId;
 	}
 	
-    public User(int uId, String mediaId, String gcmId, String email, String phoneNumber, String firstName, String lastName, String userName) {
+    public User(int uId, String mediaId, String fcmId, String email, String phoneNumber, String firstName, String lastName, String userName) {
     	this.uId = uId;
     	this.mediaId = mediaId;
-    	this.gcmId = gcmId;
+    	this.fcmId = fcmId;
     	this.email = email;
     	this.phoneNumber = phoneNumber;
     	this.firstName = firstName;
@@ -54,13 +53,13 @@ public class User {
     	this.uId = uId;
     }
     
-	@Column(name = "gcm_id")
-    public String getGcmId() {
-    	return this.gcmId;
+	@Column(name = "fcm_id")
+    public String getFcmId() {
+    	return this.fcmId;
     }
     
-    public void setGcmId(String gcmId) {
-    	this.gcmId = gcmId;
+    public void setFcmId(String fcmId) {
+    	this.fcmId = fcmId;
     }
     
     @Column(name = "media_id")
@@ -167,7 +166,7 @@ public class User {
 	
 	public String toJsonString() {
 		String jsonString = "{\"uId\":" + this.uId +
-							", \"gcmId\":" + "\"" +this.gcmId + "\"" +  
+							", \"fcmId\":" + "\"" +this.fcmId + "\"" +
  							", \"mediaId\":" + "\"" + this.mediaId + "\"" +
 							", \"email\":" + "\"" + this.email + "\"" +
 							", \"phoneNumber\":" + "\"" + this.phoneNumber + "\"" +

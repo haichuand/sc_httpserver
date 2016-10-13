@@ -11,17 +11,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
 
 import util.StatusCode;
 import model.Conversation;
@@ -29,7 +23,6 @@ import model.ConversationAttendee;
 import model.ConversationTitle;
 import model.Event;
 import model.Message;
-import model.MessagePrimaryKey;
 import model.User;
 import dao.ConversationDao;
 import dao.UserDao;
@@ -128,7 +121,7 @@ public class ConversationService {
     	if(!attendees.isEmpty()) {
     		for(int i = 0; i < attendees.size(); i++) {
     			User att = attendees.get(i);
-    			result = result + "{\"uId\" : "+ att.getuId()+", "+"\"gcmId\": \""+ att.getGcmId()+"\"}";
+    			result = result + "{\"uId\" : "+ att.getuId()+", "+"\"fcmId\": \""+ att.getFcmId()+"\"}";
     			if(i < attendees.size()-1)
     				result += ", ";
     		}

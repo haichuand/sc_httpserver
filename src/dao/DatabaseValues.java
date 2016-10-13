@@ -6,7 +6,7 @@ public class DatabaseValues {
 	        public static final String TABLE = "`user`";
 
 	        public static final String U_ID = "`u_id`";
-	        public static final String GCM_ID = "`gcm_id`";
+	        public static final String FCM_ID = "`fcm_id`";
 	        public static final String MEDIA_ID = "`media_id`";
 	        public static final String PHONE_NUMBER = "`phone_number`";
 	        public static final String EMAIL = "`email`";

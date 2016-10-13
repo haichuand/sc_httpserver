@@ -10,11 +10,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
@@ -93,7 +91,7 @@ public class UserService {
     	User user = userDao.getUser(userId);
     	String fcmId = null;
     	if(user != null) {
-    		fcmId = user.getGcmId();
+    		fcmId = user.getFcmId();
     		return "{\"fcmId\": \"" +fcmId + "\"}" ; 
     	}
     	
@@ -109,7 +107,7 @@ public class UserService {
     	if(!users.isEmpty()) {
     		for(int i = 0; i < users.size(); i++) {
     			User user = users.get(i);
-    			result = result + "{\"uId\" : "+ user.getuId()+", "+"\"fcmId\": \""+ user.getGcmId()+"\"}";
+    			result = result + "{\"uId\" : "+ user.getuId()+", "+"\"fcmId\": \""+ user.getFcmId()+"\"}";
     			if(i < users.size()-1)
     				result += ", ";
     		}
@@ -267,8 +265,8 @@ public class UserService {
     	User user = userDao.getUser(userBasic.getuId());
     	if(user != null) {
     		user.setEmail(userBasic.getEmail());
-    		user.setGcmId(userBasic.getGcmId());
-    		user.setMediaId(userBasic.getGcmId());
+    		user.setFcmId(userBasic.getFcmId());
+    		user.setMediaId(userBasic.getFcmId());
     		user.setPhoneNumber(userBasic.getPhoneNumber());
     		user.setFirstName(userBasic.getFirstName());
     		user.setLastName(userBasic.getLastName());
@@ -314,7 +312,7 @@ public class UserService {
     		return "{ \"status\": " + StatusCode.STATUS_NO_USER +"}";
     	}
     	
-    	user.setGcmId(newFcmId);
+    	user.setFcmId(newFcmId);
     	userDao.edit(user);
     	return "{ \"status\": " + StatusCode.STATUS_OK +"}";
     }

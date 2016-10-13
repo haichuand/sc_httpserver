@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class UserBasic {
 	private int uId;
-	private String gcmId;
+	private String fcmId;
 	private String mediaId;
 	private String email;
 	private String phoneNumber;
@@ -22,12 +22,12 @@ public class UserBasic {
 		this.uId = uId;
 	}
 	
-	public String getGcmId() {
-		return gcmId;
+	public String getFcmId() {
+		return fcmId;
 	}
 	
-	public void setGcmId(String gcmId) {
-		this.gcmId = gcmId;
+	public void setFcmId(String fcmId) {
+		this.fcmId = fcmId;
 	}
 	
 	public String getMediaId() {

@@ -238,11 +238,17 @@ public class UserService {
     public String postUser(User user) {
     	String email = user.getEmail();
     	String phoneNumber = user.getPhoneNumber();
-    	
+
+        boolean updateUser = false;
     	if(email != null && !email.isEmpty()) {
-    		User existringUserWithEmail = userDao.getUserByEmail(email);
-    		if( existringUserWithEmail != null) {
-    			return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
+    		User existingUserWithEmail = userDao.getUserByEmail(email);
+    		if( existingUserWithEmail != null) {
+				if (existingUserWithEmail.getFcmId().contains("@")) { // update temporary user
+                    user.setuId(existingUserWithEmail.getuId());
+                    updateUser = true;
+                } else { // registered user exists, return error code
+                    return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
+                }
     		}
     	}
     	
@@ -252,8 +258,15 @@ public class UserService {
     			return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
     		}
     	}
-    	
-        int id = userDao.create (user);	
+
+    	int id;
+    	if (updateUser) {
+            userDao.edit(user);
+            id = user.getuId();
+        } else {
+            id = userDao.create (user);
+        }
+        
         return "{ \"uId\": " + id +"}";                 
     }
     

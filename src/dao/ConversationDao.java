@@ -15,4 +15,6 @@ public interface ConversationDao {
 	public Set getAttendees(String convId);
 	public List getMessages(String convId);
 	public List getMessages(String convId, long startTime, long endTime);
+        public List getConversationIds(int userId);
+      
 }

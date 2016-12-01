@@ -11,4 +11,5 @@ public interface EventDao {
 	public void delete(String eventId);
 	public Event getEvent(String eventId);
 	public Set getEventAttendees(String eventId);
+        public List<Event> getEventbyConvId(String convId);
 }

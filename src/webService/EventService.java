@@ -85,6 +85,30 @@ public class EventService {
     	return event;
     }
     
+     @GET
+    @Path("/getEventbyConvId/{convId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getEventByConvId(@PathParam("convId")String convId) {
+    	List<Event> events = eventDao.getEventbyConvId(convId);
+       
+    	
+    	if(events == null)
+    		return "{ \"status\": " + StatusCode.STATUS_NO_EVENT +"}";
+        
+       String result = "{\"eventId\": [";
+       for(int i = 0; i< events.size(); i++)
+       {
+            
+             Event event = events.get(i);
+    	     result += "\""+ event.getEventId()+"\"";
+    			if(i < events.size()-1)
+    				result += ", ";
+       }
+        result += "]}";
+    	return result;
+
+    }
+    
     @GET
     @Path("/eventAttendeesGcmId/{eventId}")
     @Produces(MediaType.TEXT_PLAIN)

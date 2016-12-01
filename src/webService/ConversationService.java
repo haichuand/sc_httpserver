@@ -28,6 +28,7 @@ import dao.ConversationDao;
 import dao.UserDao;
 import dao.impl.ConversationDaoImpl;
 import dao.impl.UserDaoImpl;
+import model.MessagesList;
 
 
 @Path("/conversation")
@@ -107,6 +108,31 @@ public class ConversationService {
     }
     
     @GET
+    @Path("/getconversationIds/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getConversationIds(@PathParam("userId")int userId) {
+    	List<String> convIds =  conversationDao.getConversationIds(userId);
+    	
+    	if(convIds == null) 
+    		return "{ \"status\": " + StatusCode.STATUS_NO_CONVERSATION +"}";
+
+    	
+    	if(!convIds.isEmpty()) {
+    		String result = "{\"cId\": [";
+    		for(int i = 0; i < convIds.size(); i++) {
+    			result += "\""+ convIds.get(i)+"\"";
+    			if(i < convIds.size()-1)
+    				result += ", ";
+    		}
+    		result += "]}";
+    		return result;
+    	}
+    	
+    	return "{ \"status\": " + StatusCode.STATUS_ERROR +"}";
+    }
+    
+
+    @GET
     @Path("/conversationAttendeesGcmId/{convId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getConversationAttendeesGcmId(@PathParam("convId")String convId) {
@@ -133,9 +159,10 @@ public class ConversationService {
     @GET
     @Path("/conversationMessages/{convId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Message> getConversationMessages(@PathParam("convId")String convId) {
+    public MessagesList getConversationMessages(@PathParam("convId")String convId) {
     	List<Message> messages = conversationDao.getMessages(convId);
-    	return messages;
+        MessagesList response = new MessagesList(messages);
+    	return response;
     }
     
     

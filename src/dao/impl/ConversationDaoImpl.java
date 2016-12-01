@@ -19,6 +19,7 @@ import java.util.List;
 
 import dao.UserDao;
 import dao.ConversationDao;
+import model.MessagePrimaryKey;
 
 public class ConversationDaoImpl implements ConversationDao {
 	private SessionFactory factory;
@@ -165,5 +166,30 @@ public class ConversationDaoImpl implements ConversationDao {
 		}
 		return msgs;
 	}
+        
+        @Override
+        public List getConversationIds(int userId)
+        {
+            List cIds = null;
+		Session session = factory.openSession();
+		Transaction tx = null;
 
+		try {
+			tx = session.beginTransaction();
+
+                        Query query = session.createSQLQuery( "select c_id from conversation_attendee ca where ca.u_id = :userId").setParameter("userId", userId);	
+			cIds = query.list();
+			tx.commit();
+		} catch (HibernateException e) {
+			System.out.println("Error");
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return cIds;
+        }
+
+        
 }

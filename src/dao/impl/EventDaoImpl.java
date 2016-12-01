@@ -110,6 +110,32 @@ public class EventDaoImpl implements EventDao {
 		
 		return event;
 	}
+        
+        @Override
+        public List<Event> getEventbyConvId(String convId)
+        {
+                Session session = factory.openSession();
+		List<Event> event = null;
+		Transaction tx = null;
+
+		try {
+			tx = session.beginTransaction();
+                        String hql = "FROM Event E WHERE E.conversation.cId = :convId";
+			Query query = session.createQuery(hql);
+                        query.setParameter("convId", convId);
+                        event = query.list(); 
+			tx.commit();
+		} catch (HibernateException e) {
+			System.out.println("Error");
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		
+		return event; 
+        }
 
 	@Override
 	public Set getEventAttendees(String eventId) {

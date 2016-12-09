@@ -1,5 +1,6 @@
 package dao;
 
+import model.EmailPhoneNumber;
 import model.User;
 
 import java.util.List;
@@ -17,4 +18,5 @@ public interface UserDao {
 	public User getUserByEmail(String email);
 	public User getUserByPhoneNumber(String phoneNumber);
 	public List<User> getAllUser();
+	public List<User> getContactSuggestion(EmailPhoneNumber contact);
 }

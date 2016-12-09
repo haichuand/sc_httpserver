@@ -16,16 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Request;
 
+import model.*;
 import util.StatusCode;
 import dao.UserDao;
 import dao.impl.UserDaoImpl;
-import model.Conversation;
-import model.EmailPassword;
-import model.Event;
-import model.PhoneNumberPassword;
-import model.User;
-import model.UserBasic;
-import model.UserFriends;
 
 @Path("/user")
 public class UserService {
@@ -330,5 +324,17 @@ public class UserService {
     	return "{ \"status\": " + StatusCode.STATUS_OK +"}";
     }
     
-    
+    @POST
+	@Path("/suggestContacts")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<User> getContactSuggestions(EmailPhoneNumber emailPhone) {
+		List<User> suggestions = new ArrayList<>();
+		if (emailPhone == null) {
+			return suggestions;
+		}
+
+		suggestions.addAll(userDao.getContactSuggestion(emailPhone));
+		return suggestions;
+	}
 }

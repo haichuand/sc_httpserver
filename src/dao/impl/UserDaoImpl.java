@@ -1,5 +1,6 @@
 package dao.impl;
 
+import model.EmailPhoneNumber;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -193,5 +194,26 @@ public class UserDaoImpl implements UserDao {
         }
         
         return queryResult;
+	}
+
+	@Override
+	public List<User> getContactSuggestion(EmailPhoneNumber emailPhone) {
+		Session session = factory.openSession();
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("FROM User WHERE (email IN (");
+		for (String email : emailPhone.getEmail()) {
+			builder.append("'").append(email).append("',");
+		}
+		builder.deleteCharAt(builder.length() - 1).append(") OR phoneNumber IN (");
+
+		for (String phone : emailPhone.getPhoneNumber()) {
+			builder.append("'").append(phone).append("',");
+
+		}
+		builder.deleteCharAt(builder.length() - 1).append(")) AND fcmId NOT LIKE '%@%'");
+
+		org.hibernate.query.Query query = session.createQuery(builder.toString(), User.class);
+		return query.getResultList();
 	}
 }

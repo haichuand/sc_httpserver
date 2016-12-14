@@ -168,6 +168,27 @@ public class ConversationDaoImpl implements ConversationDao {
 	}
         
         @Override
+        public void deleteMessages(String convId) {
+            Session session = factory.openSession();
+            Transaction tx = null;
+
+            try {
+                                tx = session.beginTransaction();
+                        Query q = session.createQuery("delete FROM Message where c_id = '"+convId+"'");
+                                q.executeUpdate();	
+                    tx.commit();
+            } catch (HibernateException e) {
+                System.out.println("Error");
+                if (tx != null)
+                    tx.rollback();
+                e.printStackTrace();
+            } finally {
+                session.close();
+            }
+                    
+        }
+    
+        @Override
         public List getConversationIds(int userId)
         {
             List cIds = null;

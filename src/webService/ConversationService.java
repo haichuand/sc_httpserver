@@ -217,6 +217,15 @@ public class ConversationService {
    		return "{ \"status\": " + StatusCode.STATUS_OK +"}";
    	}
    	
+    @GET
+    @Path("/deleteMessages/{convId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String deleteConversationMessages(@PathParam("convId")String convId) {
+    	conversationDao.deleteMessages(convId);
+        return "{ \"status\": " + StatusCode.STATUS_OK +"}";
+       
+    }
+    
 	@POST
     @Path("/editConversation")
     @Consumes(MediaType.APPLICATION_JSON)
